@@ -1,0 +1,20 @@
+#ifndef OBJECT_H
+#define OBJECT_H
+
+#include "Eigen-3.3/Eigen/Core"
+
+using Eigen::Vector3d;
+
+class Object
+{
+ private:
+  Vector3d m_centroid;
+  
+ public:
+ Object(const Vector3d& centroid) : m_centroid {centroid} {}
+  
+  virtual bool collision(const Vector3d &position) = 0;
+  //virtual bool collision(const Obstacle &obstacle) = 0;
+};
+
+#endif
