@@ -1,27 +1,14 @@
 #ifndef PARAMETERS_H
 #define PARAMTERS_H
 
-//Base Class, purposefully empty
-/*class Parameters
-{
- public:
-  Parameters() {}
-  ~Parameters() {};
-  };*/
+//Structs used to store parameters needed by dynamics, controller, disturbance functions used by Simulator
 
+//Parameters specifying an LTI system x(k+1) = m_Ax(k) + m_Bu(k) + m_Hw(k), u(k) = m_Kx(k), w(k)~N(0,I);
 template <class T>
-struct LtiParameters// : public Parameters
+struct LtiParameters
 {
  public:
   T m_A, m_B, m_H, m_K;
-  // LtiParameters() {};
-  //LtiParameters(const T& A, const T& B, const T& H, const T& K);
 };
 
-/*
-template<typename T>
-LtiParameters<T>::LtiParameters(const T& A, const T& B, const T& H, const T& K)
-{
-  m_A = A; m_B = B; m_H = H; m_K = K;
-  }*/
 #endif
