@@ -1,6 +1,6 @@
 #include "Simulator.h"
 #include "../Eigen-3.3/Eigen/Dense"
-#include "eigenmvn.h"
+#include "MPC.h"
 #include <random>
 
 
@@ -60,7 +60,9 @@ int main()
    
   Lti lti {A,B,H,K};
   
+  cout << P << "\n";
   computeRic(P,Q,R,lti);
+  cout << P << "\n";
 
   lti.m_K = -(lti.m_B.transpose()*P*lti.m_B + R).inverse()
                  *lti.m_B.transpose()*P*lti.m_A;
@@ -69,12 +71,21 @@ int main()
   
   VectorXd x0;
   x0 = VectorXd(3);
-  x0 << 4, 5, 6;
-  
+  x0 << 1, 4, 1;
+ 
   Sim sim {100, x0, dynamics, controller, disturbance, lti};
     
   sim.simulate();
   sim.writeToFile("xlog.tr", "ulog.tr");
 
+  MPC mpc;
+
+  vector<double> sol = mpc.Solve(x0,10,A,B,Q,R,P,A,A,x0,x0);
+
+  for (auto x : sol)
+    cout << x << ", ";
+  cout << "\n";
+
+  
   return 0;
 }

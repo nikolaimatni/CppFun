@@ -1,0 +1,3 @@
+/home/nmatni/CppFun/MPC/CMakeFiles/rebuild_cache.dir
+/home/nmatni/CppFun/MPC/CMakeFiles/mpc.dir
+/home/nmatni/CppFun/MPC/CMakeFiles/edit_cache.dir
