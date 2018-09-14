@@ -11,4 +11,12 @@ public:
   Matrix m_A, m_B, m_H, m_K;
 };
 
+template <class Matrix, class Solver>
+struct MpcParameters
+{
+public:
+  Matrix m_A,m_B,m_H,m_Q,m_R,m_P;
+  int m_N;
+  Solver m_mpc;
+};
 #endif

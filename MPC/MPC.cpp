@@ -3,21 +3,18 @@
 #include <cppad/ipopt/solve.hpp>
 #include "../Eigen-3.3/Eigen/Core"
 #include <cassert>
+#include <vector>
 
 using CppAD::AD;
 using namespace std;
 using namespace Eigen;
-
-// TODO: Set the timestep length and duration
-size_t N = 0;
-double dt = 0;
 
 class FG_eval {
 
 private:
   const MatrixXd m_A, m_B, m_Q, m_R, m_P, m_Fx, m_Fu;
   const VectorXd m_x0, m_bx, m_bu;
-  int m_N;
+  const int m_N;
   
   
 public:
@@ -29,19 +26,78 @@ public:
 	  const MatrixXd& Fx, const MatrixXd& Fu, const VectorXd& bx, const VectorXd bu) : m_x0{x0}, m_N{N}, m_A{A}, m_B{B}, m_Q{Q}, m_R{R}, m_P{P}, m_Fx{Fx}, m_Fu{Fu}, m_bx{bx}, m_bu{bu} {}
 
   
-  void operator()(ADvector& fg, const ADvector& x) {
-    /*
-    fg[0] = x[0]*x[0] + x[1]*x[1];
-    int m = m_A.rows();
-    int n = m_A.cols();
-    assert(m == m_b.size() && "y and A are not compatible");
+  void operator()(ADvector& fg, const ADvector& z) {
+    int nx = m_A.rows();
+    int nu = m_B.cols();
+    int xStart = 0;
+    int uStart = xStart + (m_N+1)*nx;
 
-    setAxEqB(m_A,x,m_b,fg,1);*/
+    assert(z.size() == (m_N+1)*nx + m_N*nu && "not enough variables!");
+    assert(fg.size()-1 == (m_N)*nx && "we don't have enough constraints to enforce dynamics!");
+
+    /*
+    fg[0] = 0;
+    ADvector x0 = extract(z,0,3);
+    ADvector x1 = extract(z,3,3);
+    ADvector u0 = extract(z,6,3);
+
+    ADvector Ax = matVecMultiply(m_A,x0);
+    ADvector Bu = matVecMultiply(m_B,u0);
+
+    fg[0] += quadForm(x0,m_Q) + quadForm(u0,m_R) + quadForm(x1,m_P);
+
     
-    // TODO: implement MPC
-    // `fg` a vector of the cost constraints, `vars` is a vector of variable values (state & actuators)
-    // NOTE: You'll probably go back and forth between this function and
-    // the Solver function below.
+    fg[1] = x1[0] - Ax[0] - Bu[0];
+    fg[2] = x1[1] - Ax[1] - Bu[1];
+    fg[3] = x1[2] - Ax[2] - Bu[2];*/
+
+    for (int t = 0; t < m_N; t++){
+      //unfortunatley ADvectors don't seem to have any of the standard iterator objects, so need to manually extract subvectors
+       ADvector xt { extract(z,xStart + t*nx,nx) };
+      ADvector xtp1 {extract(z,xStart + (t+1)*nx, nx) };
+      ADvector ut { extract(z,uStart + t*nu,nu) };
+      
+      fg[0] +=  quadForm(xt,m_Q) + quadForm(ut,m_R);
+     
+      
+      ADvector Ax = matVecMultiply(m_A,xt);
+      ADvector Bu = matVecMultiply(m_B,ut);
+
+      for (int m = 0; m<nx; ++m) {
+	fg[1 + t*nx + m] = xtp1[m] - Ax[m] - Bu[m];
+      }
+    }
+
+      //TODO: add polytope constraints Fx * x <= bx, Fu * u <= bu; 
+
+    //terminal cost on state
+    fg[0] += quadForm(extract(z,xStart + (m_N)*nx,nx),m_P);
+
+  }
+
+  AD<double> quadForm(const ADvector& x, const MatrixXd& M)
+  {
+    //returns x'Mx
+    return innerProduct(x,matVecMultiply(M,x));
+    }
+
+  ADvector extract(const ADvector& z, int start, int size)
+  {
+    ADvector subvec(size);
+    for (int i = 0; i < size; ++i)
+      subvec[i] = z[start+i];
+
+    return subvec;
+  }
+
+  AD<double> innerProduct(const ADvector& a, const ADvector& x)
+  {
+    assert(a.size() == x.size() && "inner product failed: dim(a) != dim(x)");
+    AD<double> ip = 0;
+    for (int i = 0; i < a.size(); ++i) {
+      ip += a[i]*x[i];
+    }
+    return ip;
   }
 
 
@@ -54,6 +110,7 @@ public:
     }
     return ip;
   }
+  
  ADvector matVecMultiply(const MatrixXd& A, const ADvector& x)
   {
     assert(A.cols() == x.size() && "A*x failed because A and x are incompatible");
@@ -62,7 +119,7 @@ public:
 
     for (int i = 0; i < m; ++i)
       y[i] = innerProduct(A.row(i),x);
-  
+
     return y;
   }
  
@@ -87,27 +144,37 @@ void setAxEqB( const MatrixXd& A, const ADvector& x, const VectorXd& b, ADvector
 MPC::MPC() {}
 MPC::~MPC() {}
 
-vector<double> MPC::Solve(const VectorXd& x0, int N,
+VectorXd MPC::Solve(const VectorXd& x0, int N,
 			  const MatrixXd& A, const MatrixXd& B,
 			  const MatrixXd& Q, const MatrixXd& R, const MatrixXd& P,
 			  const MatrixXd& Fx, const MatrixXd& Fu, const VectorXd& bx, const VectorXd bu) {
   
   bool ok = true;
-  size_t i;
   typedef CPPAD_TESTVECTOR(double) Dvector;
 
-  // Set the number of model variables (includes both states and inputs). n_vars = nx * N + nu * (N-1)
-  size_t n_vars = 3;
-  // Set the number of constraints (excluding the dynamics). This is weird, seems to be (nx+nu) * N, but we'll see.
-  size_t n_constraints = 3;
+  int nx = A.rows();
+  int nu = B.cols();
+
+  // Set the number of model variables (includes both states and inputs). n_vars = nx * (N+1) + nu * (N)
+  size_t n_vars = nx * (N+1) + nu * (N);
+  // Set the number of constraints (excluding the dynamics). This counts the equality constraints enforcing dynamics = nx*N + other stuff that cant be enforced as box constraints (not implemented yet)
+  size_t n_constraints = nx * N;
 
   // Initial value of the independent variables.
   // SHOULD BE 0 besides initial state.
+  // TODO: WARM START
   Dvector vars(n_vars);
   for (int i = 0; i < n_vars; i++) {
     vars[i] = 0;
   }
 
+  // warm start initial conditions at their value
+  for (int i = 0; i < nx; i++){
+    vars[i] = x0(i);
+    cout << "warm start x0("<<i<<")="<<x0(i)<<"\n";
+  } 
+
+  //No upper lower bounds
   Dvector vars_lowerbound(n_vars);
   Dvector vars_upperbound(n_vars);
   for (int i = 0; i < n_vars; ++i) {
@@ -115,16 +182,24 @@ vector<double> MPC::Solve(const VectorXd& x0, int N,
     vars_upperbound[i] = 1e19;
     
   }
-  // TODO: Set lower and upper limits for variables.
 
+  //constraint x[0] = x0;
+   for (int i = 0; i < nx; i++) {
+    vars_lowerbound[i] = x0(i);
+    vars_upperbound[i] = x0(i);
+  }
+ 
   // Lower and upper limits for the constraints
-  // Should be 0 besides initial state.
+  // Should all be 0 for dynamics, and bx,bu for other stuff (not implemented yet).
+   
   Dvector constraints_lowerbound(n_constraints);
   Dvector constraints_upperbound(n_constraints);
   for (int i = 0; i < n_constraints; i++) {
     constraints_lowerbound[i] = 0;
     constraints_upperbound[i] = 0;
   }
+
+ 
 
   // object that computes objective and constraints
   FG_eval fg_eval(x0, N, A, B, Q, R, P, Fx, Fu, bx, bu);
@@ -135,7 +210,7 @@ vector<double> MPC::Solve(const VectorXd& x0, int N,
   // options for IPOPT solver
   std::string options;
   // Uncomment this if you'd like more print information
-  options += "Integer print_level  5\n";
+  options += "Integer print_level  0\n";
   // NOTE: Setting sparse to true allows the solver to take advantage
   // of sparse routines, this makes the computation MUCH FASTER. If you
   // can uncomment 1 of these and see if it makes a difference or not but
@@ -170,6 +245,12 @@ vector<double> MPC::Solve(const VectorXd& x0, int N,
   //
   // {...} is shorthand for creating a vector, so auto x1 = {1.0,2.0}
   // creates a 2 element double vector.
+
   
-  return  {solution.x[0], solution.x[1], solution.x[2]};
+
+  VectorXd control(nu);
+  for (int i = 0; i < nu; i++)
+    control(i) = solution.x[(N+1)*nx + i];
+  
+  return  control;
 }

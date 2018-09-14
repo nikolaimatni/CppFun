@@ -32,21 +32,21 @@ using namespace std;
 #define VecParamC template<class Vec, class Param>
 
 VecParamT
-using dynamicsFcn = void(*)(Vec&, const Vec&, const Vec&, const Vec&, const Param&);
+using dynamicsFcn = void(*)(Vec&, const Vec&, const Vec&, const Vec&, Param&);
 
 VecParamT
-using controlFcn = void(*)(Vec&, const Vec&, const Param&);
+using controlFcn = void(*)(Vec&, const Vec&, Param&);
 
 VecParamT
-using disturbFcn = void(*)(Vec&, const Param&);
+using disturbFcn = void(*)(Vec&, Param&);
 
 VecParamC
 class Simulator
 {
   
-  using dynamicsFcn = void(*)(Vec&, const Vec&, const Vec&, const Vec&, const Param&);
-  using controlFcn = void(*)(Vec&, const Vec&, const Param&);
-  using disturbFcn = void(*)(Vec&, const Param&);
+  using dynamicsFcn = void(*)(Vec&, const Vec&, const Vec&, const Vec&, Param&);
+  using controlFcn = void(*)(Vec&, const Vec&, Param&);
+  using disturbFcn = void(*)(Vec&, Param&);
   
 private:
   static default_random_engine s_generator;
@@ -67,7 +67,7 @@ public:
   
   static double randn();
   
-  Simulator(int horizon, const Vec& x0, dynamicsFcn dynamics=nullptr, controlFcn controller=nullptr, disturbFcn disturber=nullptr, const Param& params=0 );
+  Simulator(int horizon, const Vec& x0, dynamicsFcn dynamics=nullptr, controlFcn controller=nullptr, disturbFcn disturber=nullptr, Param& params=0 );
 
   //Advance the dynamics one time-step
   void step();
@@ -87,7 +87,7 @@ public:
 };
 
 VecParamC 
-default_random_engine Simulator<Vec,Param>::s_generator = default_random_engine {time(NULL)};
+default_random_engine Simulator<Vec,Param>::s_generator = default_random_engine {(unsigned long) time(0)};
 
 VecParamC
 normal_distribution<double> Simulator<Vec,Param>::s_distribution = normal_distribution<double>(0,1);
@@ -96,7 +96,7 @@ VecParamT
 double Simulator<Vec,Param>::randn()  { return s_distribution(s_generator); }
 
 VecParamT
-Simulator<Vec,Param>::Simulator(int horizon, const Vec& x0, dynamicsFcn dynamics, controlFcn controller, disturbFcn disturber, const Param& params)
+Simulator<Vec,Param>::Simulator(int horizon, const Vec& x0, dynamicsFcn dynamics, controlFcn controller, disturbFcn disturber, Param& params)
 {  
   m_time = 0;
   m_params = params;
@@ -148,7 +148,6 @@ void Simulator<Vec,Param>::simulate()
       step();
     }
 
-  int N = m_horizon;
 }
 
 VecParamT

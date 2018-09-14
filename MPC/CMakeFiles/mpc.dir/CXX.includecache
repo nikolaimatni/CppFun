@@ -1059,6 +1059,8 @@ cppad/ipopt/solve.hpp
 /home/nmatni/CppFun/Eigen-3.3/Eigen/Core
 cassert
 -
+vector
+-
 
 /home/nmatni/CppFun/MPC/MPC.h
 vector

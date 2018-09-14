@@ -18,7 +18,7 @@ public:
   virtual ~MPC();
 
   // Solve the model given an initial state and (optional) reference trajectory
-  vector<double> Solve(const VectorXd& x0, int N,
+  VectorXd Solve(const VectorXd& x0, int N,
 			  const MatrixXd& A, const MatrixXd& B,
 			  const MatrixXd& Q, const MatrixXd& R, const MatrixXd& P,
 			    const MatrixXd& Fx, const MatrixXd& Fu, const VectorXd& bx, const VectorXd bu);
