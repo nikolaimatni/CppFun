@@ -9,7 +9,11 @@ using LtiParams = LtiParameters<MatrixXd>;
 using MpcParams = MpcParameters<MatrixXd,MPC>;
 using namespace std;
 
-//Simple means of computing solution to Ric equation via the Ric recursion;
+/*
+Using this as a simple way of testing my homespun dynamics simulator and MPC solver
+ */
+
+//Simple approach to computing solution to Ric equation via the Ric recursion;
 void computeRic(MatrixXd& P, const MatrixXd& Q, const MatrixXd& R, const LtiParams& lti, double precision = 1e-6, int maxIter = 1000)
 {
   int count = 0;
@@ -96,35 +100,31 @@ int main()
   MPC mpc;
   MpcParams mpcP {A,B,H,Q,R,P,Fx,Fu,bx,bu,N,mpc};
 
-  
- 
-  
-  cout << P << "\n";
+  //Compute solution P = DARE(A,B,Q,R)
   computeRic(P,Q,R,ltiP);
-  cout << P << "\n";
-
+  
+  //Set controller used by lti simulator using P = DARE(A,B,Q,R)
   ltiP.m_K = -(ltiP.m_B.transpose()*P*ltiP.m_B + R).inverse()
     *ltiP.m_B.transpose()*P*ltiP.m_A;
 
   
   VectorXd x0 = VectorXd(3);
-  x0 << 0, 0, 0;
-
-  VectorXd x1 = VectorXd(3);
-  x1 << 2, 3, 2;
+  x0 << 1, 2, 3;
 
 
+  // Set up an LTI simulator and and MPC simulator using the same dynamics
+  //The MPC controller has box constraints -.5 <= u <= .5
+  // Not that the simulators are driven by different noise processes with covariance given by HH'
   
-   Simulator<VectorXd,MpcParams> simMPC {100, x1, mpcDynamics, mpcController, mpcDisturbance, mpcP};
+   Simulator<VectorXd,MpcParams> simMPC {100, x0, mpcDynamics, mpcController, mpcDisturbance, mpcP};
 
-  Simulator<VectorXd,LtiParams> simLTI  {100, x1, ltiDynamics, ltiController, ltiDisturbance, ltiP};
+  Simulator<VectorXd,LtiParams> simLTI  {100, x0, ltiDynamics, ltiController, ltiDisturbance, ltiP};
 
-  
+  //Run the simulation
   simMPC.simulate();
- 
-
   simLTI.simulate(); 
-  
+
+  //Write results to files -- plot these by running python plot_traces.py
   simLTI.writeToFile("lti_xlog.tr","lti_ulog.tr");
   simMPC.writeToFile("mpc_xlog.tr", "mpc_ulog.tr");
   
