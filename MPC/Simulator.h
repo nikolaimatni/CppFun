@@ -75,9 +75,13 @@ public:
   //Run the simulation from m_time to m_horizon
   void simulate();
 
+  void reset(int horizon, const Vec& x0, dynamicsFcn dynamics, controlFcn controller, disturbFcn disturber, Param& params);
+
   void setDynamics(dynamicsFcn dynamics) { m_dynamics = dynamics; }
   void setController(controlFcn controller) { m_controller = controller; }
   void setDisturber(disturbFcn disturber) { m_disturber = disturber; }
+  void setParams(Param params) { m_params = params; }
+  void setX0(Vec x0) { m_state[0] = x0; }
   void setVerbose(bool verbose) {m_verbose = verbose; }
   bool getVerbose() const {return m_verbose; }
   void writeToFile(const string& stateFile, const string& inputFile);
@@ -110,9 +114,40 @@ Simulator<Vec,Param>::Simulator(int horizon, const Vec& x0, dynamicsFcn dynamics
   m_input.reserve(m_horizon);
   m_disturbance.reserve(m_horizon);
 
+  cout <<"Construter horizon is " << m_horizon << "\n";
+  cout <<"Constructor state capacity is " << m_state.capacity() << "\n";
+
   //Push our initial condition onto the m_state
   m_state.push_back(x0);
 }
+
+VecParamT
+void Simulator<Vec,Param>::reset(int horizon, const Vec& x0, dynamicsFcn dynamics, controlFcn controller, disturbFcn disturber, Param& params)
+{  
+  m_time = 0;
+  m_params = params;
+  
+  m_dynamics = dynamics;
+  m_controller = controller;
+  m_disturber = disturber;
+  m_horizon = horizon;
+
+
+  m_state.clear();
+  m_input.clear();
+  m_disturbance.clear();
+  //Pre-allocate vectors for state, input, disturbance
+  m_state.reserve(m_horizon+1);
+  m_input.reserve(m_horizon);
+  m_disturbance.reserve(m_horizon);
+
+  cout <<"Construter horizon is " << m_horizon << "\n";
+  cout <<"Constructor state capacity is " << m_state.capacity() << "\n";
+
+  //Push our initial condition onto the m_state
+  m_state.push_back(x0);
+}
+
 
 VecParamT
 void Simulator<Vec,Param>::step()
@@ -120,9 +155,11 @@ void Simulator<Vec,Param>::step()
   int t = m_time;
 
   //instantiate the vectors T() to be populated below
+  cout << m_disturbance.size() << "\n";
   m_disturbance[t] = Vec();
   m_state[t + 1] = Vec();
   m_input[t] = Vec();
+
 
   //Populate m_disturbance[t], m_input[t] and m_state[t+1]
   m_disturber(m_disturbance[t], m_params);

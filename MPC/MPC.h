@@ -21,7 +21,7 @@ public:
   VectorXd Solve(const VectorXd& x0, int N,
 			  const MatrixXd& A, const MatrixXd& B,
 			  const MatrixXd& Q, const MatrixXd& R, const MatrixXd& P,
-			    const MatrixXd& Fx, const MatrixXd& Fu, const VectorXd& bx, const VectorXd bu);
+			    const MatrixXd& Fx, const MatrixXd& Fu, const VectorXd& bx, const VectorXd& bu);
 };
 
 #endif /* MPC_H */

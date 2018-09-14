@@ -24,14 +24,15 @@ def plotFile(filepath,label):
     plt.legend()
        
 
-
-plotFile('lti_xlog.tr','x')
 plt.figure()
+plt.subplot(2,2,1)
+plotFile('lti_xlog.tr','x')
+plt.subplot(2,2,2)
 plotFile('mpc_xlog.tr','x')
 
-plt.figure()
+plt.subplot(2,2,3)
 plotFile('lti_ulog.tr','u')
-plt.figure()
+plt.subplot(2,2,4)
 plotFile('mpc_ulog.tr','u')
 plt.show()
 

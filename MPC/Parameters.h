@@ -15,7 +15,7 @@ template <class Matrix, class Solver>
 struct MpcParameters
 {
 public:
-  Matrix m_A,m_B,m_H,m_Q,m_R,m_P;
+  Matrix m_A,m_B,m_H,m_Q,m_R,m_P,m_Fx,m_Fu,m_bx,m_bu;
   int m_N;
   Solver m_mpc;
 };
