@@ -1,0 +1,11 @@
+As a challenge project to myself, I set out to develop a *single* dynamical system + controller simulator class that had the following properties (note this becomes somehwat trivial if you allow different Simulator classes for specific settings):
+
+1) Allowed the user to choose what kind of object they used to represent vectors/matrices,
+2) Allowed the user to swap out different dynamic functions, controllers, and disturbance generating processes,
+3) Allowed the user to specify linear or nonlinear dynamics.
+
+To meet satisfy property 1, I used templates; to satisfy properties 2 and 3 I allowed the user to pass in function pointers to generate dynamics, control actions and disturbances to the simulator.
+
+The resulting simulator relies structs of parameters used by different simulator template realizations.  I find this somewhat unsatisfactory right now, as I would like to be able to use the same simulator template realization if info in struct1 is contained in struct2 -- a TODO is to shift to using container classes instead of structs to pass additional parameters into the various functions, and appropriately downcast.
+
+I've also implemented a MPC solver using CppAD and IpOpt that has a quadratic cost, LTI dynamics, and polytopic state and input constraints.
