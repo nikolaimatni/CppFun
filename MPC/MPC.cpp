@@ -183,20 +183,20 @@ VectorXd MPC::Solve(const VectorXd& x0, int N,
   int mx = Fx.rows();
   int mu = Fu.rows();
 
-  // Set the number of model variables (includes both states and inputs). n_vars = nx * (N+1) + nu * (N)
-  size_t n_vars = nx * (N+1) + nu * (N);
+  // Set the number of model variables (includes both states and inputs). nVars = nx * (N+1) + nu * (N)
+  size_t nVars = nx * (N+1) + nu * (N);
   
   // Set the number of constraints
-  size_t n_dynamics_constraints = nx * N;
-  size_t n_state_constraints = mx * (N+1);
-  size_t n_input_constraints = mu * N;
-  size_t n_constraints = n_dynamics_constraints + n_state_constraints + n_input_constraints;
+  size_t nDynamicsConstraints = nx * N;
+  size_t nStateConstraints = mx * (N+1);
+  size_t nInputConstraints = mu * N;
+  size_t nConstraints = nDynamicsConstraints + nStateConstraints + nInputConstraints;
 
 
    // TODO: warm start with last iteration's solution time shifted by 1
   // for now just set the to zero because hopefully we're doing good control
-  Dvector vars(n_vars);
-  for (int i = 0; i < n_vars; i++) {
+  Dvector vars(nVars);
+  for (int i = 0; i < nVars; i++) {
     vars[i] = 0;
   }
 
@@ -206,24 +206,24 @@ VectorXd MPC::Solve(const VectorXd& x0, int N,
   } 
   
   //No upper lower bounds on variables, we'll enforce those using polytopic constraints Fx*x(t) <= bx, Fu*u(t) <= bu
-  Dvector vars_lowerbound(n_vars);
-  Dvector vars_upperbound(n_vars);
-  for (int i = 0; i < n_vars; ++i) {
-    vars_lowerbound[i] = -1e19;
-    vars_upperbound[i] = 1e19;
+  Dvector varsLowerBound(nVars);
+  Dvector varsUpperBound(nVars);
+  for (int i = 0; i < nVars; ++i) {
+    varsLowerBound[i] = -1e19;
+    varsUpperBound[i] = 1e19;
     
   }
 
   //constraint x[0] = x0;
    for (int i = 0; i < nx; i++) {
-    vars_lowerbound[i] = x0(i);
-    vars_upperbound[i] = x0(i);
+    varsLowerBound[i] = x0(i);
+    varsUpperBound[i] = x0(i);
   }
  
   // Lower and upper limits for the constraints -- if upper == lower, then IpOpt converts it to an equality constraint.
 
-   Dvector constraints_lowerbound(n_constraints);
-   Dvector constraints_upperbound(n_constraints);
+   Dvector constraintsLowerBound(nConstraints);
+   Dvector constraintsUpperBound(nConstraints);
 
    for (int t = 0; t < N; t++) {
      int cstIdx = t*nx;
@@ -232,28 +232,28 @@ VectorXd MPC::Solve(const VectorXd& x0, int N,
 
      // 0<= x(t+1) - Ax(t) - Bu(t) <=0
      for (int i = 0; i < nx; i++) {
-       constraints_lowerbound[cstIdx+i] = 0;
-       constraints_upperbound[cstIdx+i] = 0;
+       constraintsLowerBound[cstIdx+i] = 0;
+       constraintsUpperBound[cstIdx+i] = 0;
      }
 
      // Fx * x(t) <= bx
      for (int i = 0; i < mx; i++) {
-       constraints_lowerbound[stIdx + i] = -1e19;
-       constraints_upperbound[stIdx + i] = bx(i);
+       constraintsLowerBound[stIdx + i] = -1e19;
+       constraintsUpperBound[stIdx + i] = bx(i);
      }
 
      // Fu * u(t) <= bu
      for (int i = 0; i < mu; i++) {
-       constraints_lowerbound[inIdx + i] = -1e19;
-       constraints_upperbound[inIdx + i] = bu(i);     
+       constraintsLowerBound[inIdx + i] = -1e19;
+       constraintsUpperBound[inIdx + i] = bu(i);     
      } 
     
    }
 
    // Need to take care of Fx* x(N) <= bx explicitly
    for (int i = 0; i < mx; i++) {
-       constraints_lowerbound[nx*N + mx*N + i] = -1e19;
-       constraints_upperbound[nx*N + mx*N + i] = bx(i);
+       constraintsLowerBound[nx*N + mx*N + i] = -1e19;
+       constraintsUpperBound[nx*N + mx*N + i] = bx(i);
    }
 
   // object that computes objective and constraints
@@ -274,8 +274,8 @@ VectorXd MPC::Solve(const VectorXd& x0, int N,
 
   // solve the problem
   CppAD::ipopt::solve<Dvector, FG_eval>(
-					options, vars, vars_lowerbound, vars_upperbound, constraints_lowerbound,
-					constraints_upperbound, fg_eval, solution);
+					options, vars, varsLowerBound, varsUpperBound, constraintsLowerBound,
+					constraintsUpperBound, fg_eval, solution);
 
   // Check some of the solution values
   ok &= solution.status == CppAD::ipopt::solve_result<Dvector>::success;
