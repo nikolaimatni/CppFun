@@ -114,8 +114,7 @@ Simulator<Vec,Param>::Simulator(int horizon, const Vec& x0, dynamicsFcn dynamics
   m_input.reserve(m_horizon);
   m_disturbance.reserve(m_horizon);
 
-  cout <<"Construter horizon is " << m_horizon << "\n";
-  cout <<"Constructor state capacity is " << m_state.capacity() << "\n";
+  
 
   //Push our initial condition onto the m_state
   m_state.push_back(x0);
@@ -141,9 +140,7 @@ void Simulator<Vec,Param>::reset(int horizon, const Vec& x0, dynamicsFcn dynamic
   m_input.reserve(m_horizon);
   m_disturbance.reserve(m_horizon);
 
-  cout <<"Construter horizon is " << m_horizon << "\n";
-  cout <<"Constructor state capacity is " << m_state.capacity() << "\n";
-
+  
   //Push our initial condition onto the m_state
   m_state.push_back(x0);
 }
@@ -155,7 +152,7 @@ void Simulator<Vec,Param>::step()
   int t = m_time;
 
   //instantiate the vectors T() to be populated below
-  cout << m_disturbance.size() << "\n";
+  
   m_disturbance[t] = Vec();
   m_state[t + 1] = Vec();
   m_input[t] = Vec();

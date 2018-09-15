@@ -120,6 +120,10 @@ int main()
 
   Simulator<VectorXd,LtiParams> simLTI  {100, x0, ltiDynamics, ltiController, ltiDisturbance, ltiP};
 
+  //make simulators quiet
+  simMPC.setVerbose(false);
+  simLTI.setVerbose(false);
+  
   //Run the simulation
   simMPC.simulate();
   simLTI.simulate(); 
@@ -130,7 +134,7 @@ int main()
   
   
   //Sanity check: MPC with Q_N = P = DARE(A,B,Q,R) and no constraints should give same control action as Kx1
-  cout <<"Sanity check, these two should be the same: "<< mpc.Solve(x1,10,A,B,Q,R,P,A*0,Fu*0,x0*0,bu) << ", " << ltiP.m_K*x1 << "\n"; 
+  cout <<"Sanity check, these two should be the same: "<< mpc.Solve(x0,10,A,B,Q,R,P,A*0,Fu*0,x0*0,bu) << ", " << ltiP.m_K*x0 << "\n"; 
  
     
   return 0;
