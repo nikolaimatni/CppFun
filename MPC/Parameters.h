@@ -11,6 +11,7 @@ public:
   Matrix m_A, m_B, m_H, m_K;
 };
 
+//Paramters specifying an LTI system as above, except now u(k) is computed using the MPC controller mpc, which is specified by parameters weights (Q,R) and terminal cost P, polytopic constraint Fx *x <= bx, Fu * u <= bu
 template <class Matrix, class Solver>
 struct MpcParameters
 {
