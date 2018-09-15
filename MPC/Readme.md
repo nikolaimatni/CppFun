@@ -6,7 +6,7 @@ As a challenge project to myself, I set out to develop a *single* dynamical syst
 
 To meet satisfy property 1, I used templates; to satisfy properties 2 and 3 I allowed the user to pass in function pointers to generate dynamics, control actions and disturbances to the simulator.
 
-The resulting simulator relies structs of parameters used by different simulator template realizations.  I find this somewhat unsatisfactory right now, as I would like to be able to use the same simulator template realization if info in struct1 is contained in struct2 -- a TODO is to shift to using container classes instead of structs to pass additional parameters into the various functions, and appropriately downcast.
+The resulting simulator relies structs of parameters used by different simulator template realizations. 
 
 I've also implemented a MPC solver using CppAD and IpOpt that has a quadratic cost, LTI dynamics, and polytopic state and input constraints.  Although IpOpt and CppAD is a bit overkill given everything is a QP, I plan to eventually implement a nonlinear MPC controller as well, and to keep things simple I wanted to rely on a single optimization backend.
 
