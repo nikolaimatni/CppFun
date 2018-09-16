@@ -1,0 +1,88 @@
+\hypertarget{classSimulator}{}\section{Simulator Class Reference}
+\label{classSimulator}\index{Simulator@{Simulator}}
+
+
+A class used to simulate a dynamical system driven by a controller and a disturbance process.  
+
+
+
+
+{\ttfamily \#include $<$Simulator.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSimulator_a4cfe319e3abf788ce05e1ddb322a904e}\label{classSimulator_a4cfe319e3abf788ce05e1ddb322a904e}} 
+\mbox{\hyperlink{classSimulator_a4cfe319e3abf788ce05e1ddb322a904e}{Simulator}} (int horizon, const Vec \&x0, dynamics\+Fcn dynamics=nullptr, control\+Fcn controller=nullptr, disturb\+Fcn disturber=nullptr, Param \&params=0)
+\begin{DoxyCompactList}\small\item\em Constructer assigning horizon, IC, dynamics, controller, disturbance functions and Parameter object. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classSimulator_a3bdb2a9b121073e71e424203a9416b04}{step}} ()
+\begin{DoxyCompactList}\small\item\em Advance the dynamics one time-\/step. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classSimulator_afbc1911a12ff19714760b7791f69f178}\label{classSimulator_afbc1911a12ff19714760b7791f69f178}} 
+void \mbox{\hyperlink{classSimulator_afbc1911a12ff19714760b7791f69f178}{simulate}} ()
+\begin{DoxyCompactList}\small\item\em Run the simulation from m\+\_\+time to m\+\_\+horizon. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classSimulator_a028f379c1190c84b6af0a4824f10dad0}\label{classSimulator_a028f379c1190c84b6af0a4824f10dad0}} 
+void \mbox{\hyperlink{classSimulator_a028f379c1190c84b6af0a4824f10dad0}{reset}} (int horizon, const Vec \&x0, dynamics\+Fcn dynamics, control\+Fcn controller, disturb\+Fcn disturber, Param \&params)
+\begin{DoxyCompactList}\small\item\em reset the simulator (does the same thing as constructor) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classSimulator_af19085bb19ced728593aa27835f6e591}\label{classSimulator_af19085bb19ced728593aa27835f6e591}} 
+void \mbox{\hyperlink{classSimulator_af19085bb19ced728593aa27835f6e591}{set\+Dynamics}} (dynamics\+Fcn dynamics)
+\begin{DoxyCompactList}\small\item\em set dynamics function \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classSimulator_a53e30a07431c73a9be87657f0eb1b0b4}\label{classSimulator_a53e30a07431c73a9be87657f0eb1b0b4}} 
+void \mbox{\hyperlink{classSimulator_a53e30a07431c73a9be87657f0eb1b0b4}{set\+Controller}} (control\+Fcn controller)
+\begin{DoxyCompactList}\small\item\em set controller function \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classSimulator_a77650bca5cc7fd8e71207453339f55a5}\label{classSimulator_a77650bca5cc7fd8e71207453339f55a5}} 
+void \mbox{\hyperlink{classSimulator_a77650bca5cc7fd8e71207453339f55a5}{set\+Disturber}} (disturb\+Fcn disturber)
+\begin{DoxyCompactList}\small\item\em set disturbance function \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classSimulator_a622af3bddf0b85d4115ba06ca04f1d12}\label{classSimulator_a622af3bddf0b85d4115ba06ca04f1d12}} 
+void \mbox{\hyperlink{classSimulator_a622af3bddf0b85d4115ba06ca04f1d12}{set\+Params}} (Param params)
+\begin{DoxyCompactList}\small\item\em set Parameters object \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classSimulator_ae7eeb81e869342f070002c64f5fe67f5}\label{classSimulator_ae7eeb81e869342f070002c64f5fe67f5}} 
+void \mbox{\hyperlink{classSimulator_ae7eeb81e869342f070002c64f5fe67f5}{set\+X0}} (Vec x0)
+\begin{DoxyCompactList}\small\item\em set initial condition \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classSimulator_a1b7d632e3a3552977c029cf2ec9ffe6d}\label{classSimulator_a1b7d632e3a3552977c029cf2ec9ffe6d}} 
+void \mbox{\hyperlink{classSimulator_a1b7d632e3a3552977c029cf2ec9ffe6d}{set\+Verbose}} (bool verbose)
+\begin{DoxyCompactList}\small\item\em set whether \mbox{\hyperlink{classSimulator}{Simulator}} verbosity \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classSimulator_afa7f3ae7bb179cd053370ba916888951}\label{classSimulator_afa7f3ae7bb179cd053370ba916888951}} 
+bool \mbox{\hyperlink{classSimulator_afa7f3ae7bb179cd053370ba916888951}{get\+Verbose}} () const
+\begin{DoxyCompactList}\small\item\em get \mbox{\hyperlink{classSimulator}{Simulator}} verbosity \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classSimulator_a04c16ab9b54382c4e87a467d818ef24b}\label{classSimulator_a04c16ab9b54382c4e87a467d818ef24b}} 
+void \mbox{\hyperlink{classSimulator_a04c16ab9b54382c4e87a467d818ef24b}{write\+To\+File}} (const string \&state\+File, const string \&input\+File)
+\begin{DoxyCompactList}\small\item\em write simulation state and input trajectories to state\+File and input\+File, respectively \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSimulator_a91551e262a87157d9d523d5332bd2a58}\label{classSimulator_a91551e262a87157d9d523d5332bd2a58}} 
+static double \mbox{\hyperlink{classSimulator_a91551e262a87157d9d523d5332bd2a58}{randn}} ()
+\begin{DoxyCompactList}\small\item\em static helper function to generate N(0,1) r.\+v. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A class used to simulate a dynamical system driven by a controller and a disturbance process. 
+
+This is a class used to simulate dynamics driven by a controller and a disturbance process. The dynamics are specified by dynamics\+Fcn, the controller by controller\+Fcn, and the disturbance process by disturb\+Fcn. It stores the state, input, and disturbance history in vectors, which can then be printed out to separate files (currently only state and input files are created).
+
+Vec is class used to represent vectors, Param is a class or struct containing information about dynamics, controller, disturbances. Must be compatible with Vec. For example, if Vec is Eigen\+::\+Vector\+Xd, then Param could be used to specify state-\/space parameters that are represented as Eigen\+::\+Matrix\+Xd;
+
+We assume that Vec has a default construct Vec() -- this is needed to instantiate state, input, disturbance before they are populated in their respective functions, as described below
+
+dynamics\+Fcn(Vec\& next\+State, Vec\& state, Vec\& input, Vec\& disturbance, Param\& params)\+: uses state, input, disturbance, pararams to compute next\+State
+
+control\+Fcn(\+Vec\& input, Vec\& state, Param\& params)\+: uses state, params to compute input
+
+disturb\+Fcn(\+Vec\& disturbance, Param\& params)\+: uses params to compute disturbance 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classSimulator_a3bdb2a9b121073e71e424203a9416b04}\label{classSimulator_a3bdb2a9b121073e71e424203a9416b04}} 
+\index{Simulator@{Simulator}!step@{step}}
+\index{step@{step}!Simulator@{Simulator}}
+\subsubsection{\texorpdfstring{step()}{step()}}
+{\footnotesize\ttfamily Vec\+ParamT void Simulator\+::step (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Advance the dynamics one time-\/step. 
+
+This function advances the simulator one time-\/step. If m\+\_\+time = t, it initializes m\+\_\+disturbance\mbox{[}t\mbox{]}, m\+\_\+state\mbox{[}t+1\mbox{]}, and m\+\_\+input\mbox{[}t\mbox{]} with empty Vectors (by calling their default constructor), then runs, in order, the disturbance function, the controller function, and the dynamics funciton to populate m\+\_\+disturbance\mbox{[}t\mbox{]}, m\+\_\+input\mbox{[}t\mbox{]}, and m\+\_\+state\mbox{[}t+1\mbox{]}, respectively. It then advances time by one, and if m\+\_\+verbose is set to true, spits out x(t+1), u(t), and w(t). 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Simulator.\+h\end{DoxyCompactItemize}
