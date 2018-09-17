@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['getverbose',['getVerbose',['../classSimulator.html#afa7f3ae7bb179cd053370ba916888951',1,'Simulator']]]
+  ['fg_5feval',['FG_eval',['../classFG__eval.html',1,'']]]
 ];

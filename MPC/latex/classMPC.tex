@@ -1,12 +1,52 @@
 \hypertarget{classMPC}{}\section{M\+PC Class Reference}
 \label{classMPC}\index{M\+PC@{M\+PC}}
+
+
+\mbox{\hyperlink{classMPC}{M\+PC}} solver for linear system, polytopic constraints, and quadratic cost.  
+
+
+
+
+{\ttfamily \#include $<$M\+P\+C.\+h$>$}
+
 \subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\Hypertarget{classMPC_ab66c070c8bf92ee7d16a1ea521f6ec2f}\label{classMPC_ab66c070c8bf92ee7d16a1ea521f6ec2f}} 
-Vector\+Xd {\bfseries Solve} (const Vector\+Xd \&x0, int N, const Matrix\+Xd \&A, const Matrix\+Xd \&B, const Matrix\+Xd \&Q, const Matrix\+Xd \&R, const Matrix\+Xd \&P, const Matrix\+Xd \&Fx, const Matrix\+Xd \&Fu, const Vector\+Xd \&bx, const Vector\+Xd \&bu)
-\end{DoxyCompactItemize}
+\mbox{\Hypertarget{classMPC_aa00d954d8326ede0331abaf7a7a36815}\label{classMPC_aa00d954d8326ede0331abaf7a7a36815}} 
+\mbox{\hyperlink{classMPC_aa00d954d8326ede0331abaf7a7a36815}{M\+PC}} ()
+\begin{DoxyCompactList}\small\item\em \mbox{\hyperlink{classMPC}{M\+PC}} default constructor. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classMPC_a96c471412e292fd52b90bf8cac8473f1}\label{classMPC_a96c471412e292fd52b90bf8cac8473f1}} 
+virtual \mbox{\hyperlink{classMPC_a96c471412e292fd52b90bf8cac8473f1}{$\sim$\+M\+PC}} ()
+\begin{DoxyCompactList}\small\item\em \mbox{\hyperlink{classMPC}{M\+PC}} default destructor. \end{DoxyCompactList}\item 
+Vector\+Xd \mbox{\hyperlink{classMPC_ab66c070c8bf92ee7d16a1ea521f6ec2f}{Solve}} (const Vector\+Xd \&x0, int N, const Matrix\+Xd \&A, const Matrix\+Xd \&B, const Matrix\+Xd \&Q, const Matrix\+Xd \&R, const Matrix\+Xd \&P, const Matrix\+Xd \&Fx, const Matrix\+Xd \&Fu, const Vector\+Xd \&bx, const Vector\+Xd \&bu)
+\begin{DoxyCompactList}\small\item\em Solve the model given an initial state and (optional) reference trajectory. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
+
+\subsection{Detailed Description}
+\mbox{\hyperlink{classMPC}{M\+PC}} solver for linear system, polytopic constraints, and quadratic cost. 
+
+This \mbox{\hyperlink{classMPC}{M\+PC}} solver solves the problem
+
+min\+\_\+\{x,u\} sum\+\_\+\{t=0\}$^\wedge$\{N-\/1\} x\+\_\+t\textquotesingle{} Q x\+\_\+t + u\+\_\+t\textquotesingle{} R u\+\_\+t
+
+s.\+t. x\+\_\+\{t+1\} = Ax\+\_\+t + Bu\+\_\+t, x\+\_\+0 = x0 \begin{DoxyVerb} F_x x_t \leq b_x, F_u u_t \leq b_u
+\end{DoxyVerb}
+
+
+using I\+P\+O\+PT and Cpp\+AD. It uses Eigen to represent vectors and matrices. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classMPC_ab66c070c8bf92ee7d16a1ea521f6ec2f}\label{classMPC_ab66c070c8bf92ee7d16a1ea521f6ec2f}} 
+\index{M\+PC@{M\+PC}!Solve@{Solve}}
+\index{Solve@{Solve}!M\+PC@{M\+PC}}
+\subsubsection{\texorpdfstring{Solve()}{Solve()}}
+{\footnotesize\ttfamily Vector\+Xd M\+P\+C\+::\+Solve (\begin{DoxyParamCaption}\item[{const Vector\+Xd \&}]{x0,  }\item[{int}]{N,  }\item[{const Matrix\+Xd \&}]{A,  }\item[{const Matrix\+Xd \&}]{B,  }\item[{const Matrix\+Xd \&}]{Q,  }\item[{const Matrix\+Xd \&}]{R,  }\item[{const Matrix\+Xd \&}]{P,  }\item[{const Matrix\+Xd \&}]{Fx,  }\item[{const Matrix\+Xd \&}]{Fu,  }\item[{const Vector\+Xd \&}]{bx,  }\item[{const Vector\+Xd \&}]{bu }\end{DoxyParamCaption})}
+
+
+
+Solve the model given an initial state and (optional) reference trajectory. 
+
+Solves the \mbox{\hyperlink{classMPC}{M\+PC}} subproblem min\+\_\+\{x,u\} \{t=0\}$^\wedge$\+N-\/1 x\textquotesingle{}Qx + u\textquotesingle{}Ru + x(\+N)\textquotesingle{}Px(\+N) s.\+t. x+ = Ax + Bu, Fx$\ast$x(t) $<$= bx, Fu$\ast$u(t)$<$=bu for all t 0 
 
 The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
 \item 

@@ -68,13 +68,118 @@ $(function() {
 <div class="title">MPC Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><a class="el" href="classMPC.html" title="MPC solver for linear system, polytopic constraints, and quadratic cost.">MPC</a> solver for linear system, polytopic constraints, and quadratic cost.  
+ <a href="classMPC.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="MPC_8h_source.html">MPC.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ab66c070c8bf92ee7d16a1ea521f6ec2f"><td class="memItemLeft" align="right" valign="top"><a id="ab66c070c8bf92ee7d16a1ea521f6ec2f"></a>
-VectorXd&#160;</td><td class="memItemRight" valign="bottom"><b>Solve</b> (const VectorXd &amp;x0, int N, const MatrixXd &amp;A, const MatrixXd &amp;B, const MatrixXd &amp;Q, const MatrixXd &amp;R, const MatrixXd &amp;P, const MatrixXd &amp;Fx, const MatrixXd &amp;Fu, const VectorXd &amp;bx, const VectorXd &amp;bu)</td></tr>
+<tr class="memitem:aa00d954d8326ede0331abaf7a7a36815"><td class="memItemLeft" align="right" valign="top"><a id="aa00d954d8326ede0331abaf7a7a36815"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMPC.html#aa00d954d8326ede0331abaf7a7a36815">MPC</a> ()</td></tr>
+<tr class="memdesc:aa00d954d8326ede0331abaf7a7a36815"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classMPC.html" title="MPC solver for linear system, polytopic constraints, and quadratic cost.">MPC</a> default constructor. <br /></td></tr>
+<tr class="separator:aa00d954d8326ede0331abaf7a7a36815"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96c471412e292fd52b90bf8cac8473f1"><td class="memItemLeft" align="right" valign="top"><a id="a96c471412e292fd52b90bf8cac8473f1"></a>
+virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMPC.html#a96c471412e292fd52b90bf8cac8473f1">~MPC</a> ()</td></tr>
+<tr class="memdesc:a96c471412e292fd52b90bf8cac8473f1"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classMPC.html" title="MPC solver for linear system, polytopic constraints, and quadratic cost.">MPC</a> default destructor. <br /></td></tr>
+<tr class="separator:a96c471412e292fd52b90bf8cac8473f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab66c070c8bf92ee7d16a1ea521f6ec2f"><td class="memItemLeft" align="right" valign="top">VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMPC.html#ab66c070c8bf92ee7d16a1ea521f6ec2f">Solve</a> (const VectorXd &amp;x0, int N, const MatrixXd &amp;A, const MatrixXd &amp;B, const MatrixXd &amp;Q, const MatrixXd &amp;R, const MatrixXd &amp;P, const MatrixXd &amp;Fx, const MatrixXd &amp;Fu, const VectorXd &amp;bx, const VectorXd &amp;bu)</td></tr>
+<tr class="memdesc:ab66c070c8bf92ee7d16a1ea521f6ec2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve the model given an initial state and (optional) reference trajectory.  <a href="#ab66c070c8bf92ee7d16a1ea521f6ec2f">More...</a><br /></td></tr>
 <tr class="separator:ab66c070c8bf92ee7d16a1ea521f6ec2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p class=""><a class="el" href="classMPC.html" title="MPC solver for linear system, polytopic constraints, and quadratic cost.">MPC</a> solver for linear system, polytopic constraints, and quadratic cost. </p>
+<p class="">This <a class="el" href="classMPC.html" title="MPC solver for linear system, polytopic constraints, and quadratic cost.">MPC</a> solver solves the problem</p>
+<p class="">min_{x,u} sum_{t=0}^{N-1} x_t' Q x_t + u_t' R u_t</p>
+<p class="">s.t. x_{t+1} = Ax_t + Bu_t, x_0 = x0 </p><pre class="fragment"> F_x x_t \leq b_x, F_u u_t \leq b_u
+</pre><p class="">using IPOPT and CppAD. It uses Eigen to represent vectors and matrices. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="ab66c070c8bf92ee7d16a1ea521f6ec2f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab66c070c8bf92ee7d16a1ea521f6ec2f">&#9670;&nbsp;</a></span>Solve()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">VectorXd MPC::Solve </td>
+          <td>(</td>
+          <td class="paramtype">const VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>x0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>N</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>A</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>B</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>Q</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>R</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>P</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>Fx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>Fu</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>bx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>bu</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Solve the model given an initial state and (optional) reference trajectory. </p>
+<p class="">Solves the <a class="el" href="classMPC.html" title="MPC solver for linear system, polytopic constraints, and quadratic cost.">MPC</a> subproblem min_{x,u} {t=0}^N-1 x'Qx + u'Ru + x(N)'Px(N) s.t. x+ = Ax + Bu, Fx*x(t) &lt;= bx, Fu*u(t)&lt;=bu for all t 0 </p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li><a class="el" href="MPC_8h_source.html">MPC.h</a></li>
 <li>MPC.cpp</li>

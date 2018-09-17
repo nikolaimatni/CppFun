@@ -98,8 +98,10 @@ public:
   void setDisturber(disturbFcn disturber) {
     m_disturber = disturber;
   } //!< set disturbance function
-  void setParams(Param params) { m_params = params; } //!< set Parameters object
-  void setX0(Vec x0) { m_state[0] = x0; }             //!< set initial condition
+  void setParams(Param &params) {
+    m_params = params;
+  }                                        //!< set Parameters object
+  void setX0(Vec &x0) { m_state[0] = x0; } //!< set initial condition
   void setVerbose(bool verbose) {
     m_verbose = verbose;
   } //!< set whether Simulator verbosity
@@ -121,6 +123,11 @@ VecParamT double Simulator<Vec, Param>::randn() {
   return s_distribution(s_generator);
 }
 
+/*!
+Creates a new simulator object; assigns appropriate function pointrers, and
+reserves vector<Vec>s for state, input and disturbance of size m_horizon +1,
+m_horizo, and m_horizon, respectively.
+ */
 VecParamT Simulator<Vec, Param>::Simulator(int horizon, const Vec &x0,
                                            dynamicsFcn dynamics,
                                            controlFcn controller,

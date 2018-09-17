@@ -9,28 +9,39 @@ typedef {\bfseries C\+P\+P\+A\+D\+\_\+\+T\+E\+S\+T\+V\+E\+C\+T\+OR} (AD$<$ doubl
 \mbox{\Hypertarget{classFG__eval_a21207506da5c8dd16a9cde39c899fdac}\label{classFG__eval_a21207506da5c8dd16a9cde39c899fdac}} 
 {\bfseries F\+G\+\_\+eval} (const Vector\+Xd \&x0, int N, const Matrix\+Xd \&A, const Matrix\+Xd \&B, const Matrix\+Xd \&Q, const Matrix\+Xd \&R, const Matrix\+Xd \&P, const Matrix\+Xd \&Fx, const Matrix\+Xd \&Fu, const Vector\+Xd \&bx, const Vector\+Xd bu)
 \item 
-\mbox{\Hypertarget{classFG__eval_a43a1e90f9d5b9729c3c3f2d4b83c2abe}\label{classFG__eval_a43a1e90f9d5b9729c3c3f2d4b83c2abe}} 
-void {\bfseries operator()} (A\+Dvector \&fg, const A\+Dvector \&z)
+void \mbox{\hyperlink{classFG__eval_a43a1e90f9d5b9729c3c3f2d4b83c2abe}{operator()}} (A\+Dvector \&fg, const A\+Dvector \&z)
 \item 
 \mbox{\Hypertarget{classFG__eval_a80dd9281eb5fec75b488b8d19439c836}\label{classFG__eval_a80dd9281eb5fec75b488b8d19439c836}} 
-AD$<$ double $>$ {\bfseries quad\+Form} (const A\+Dvector \&x, const Matrix\+Xd \&M)
-\item 
+AD$<$ double $>$ \mbox{\hyperlink{classFG__eval_a80dd9281eb5fec75b488b8d19439c836}{quad\+Form}} (const A\+Dvector \&x, const Matrix\+Xd \&M)
+\begin{DoxyCompactList}\small\item\em Computes and returns the quadratic form x\textquotesingle{}Mx. \end{DoxyCompactList}\item 
 \mbox{\Hypertarget{classFG__eval_a5ee812f6d393850b3f8c702b60c35ad7}\label{classFG__eval_a5ee812f6d393850b3f8c702b60c35ad7}} 
-A\+Dvector {\bfseries extract} (const A\+Dvector \&z, int start, int size)
-\item 
+A\+Dvector \mbox{\hyperlink{classFG__eval_a5ee812f6d393850b3f8c702b60c35ad7}{extract}} (const A\+Dvector \&z, int start, int size)
+\begin{DoxyCompactList}\small\item\em Extracts a subvector starting at index start of length size from the vector z. \end{DoxyCompactList}\item 
 \mbox{\Hypertarget{classFG__eval_a3938a02d039cc343f88a444d13289cc1}\label{classFG__eval_a3938a02d039cc343f88a444d13289cc1}} 
-AD$<$ double $>$ {\bfseries inner\+Product} (const A\+Dvector \&a, const A\+Dvector \&x)
-\item 
+AD$<$ double $>$ \mbox{\hyperlink{classFG__eval_a3938a02d039cc343f88a444d13289cc1}{inner\+Product}} (const A\+Dvector \&a, const A\+Dvector \&x)
+\begin{DoxyCompactList}\small\item\em Computes and returns $<$a,x$>$ where both a and x contain decision variables. \end{DoxyCompactList}\item 
 \mbox{\Hypertarget{classFG__eval_a8d198d976aba16c940570fff2ac1ade6}\label{classFG__eval_a8d198d976aba16c940570fff2ac1ade6}} 
-AD$<$ double $>$ {\bfseries inner\+Product} (const Vector\+Xd \&a, const A\+Dvector \&x)
-\item 
+AD$<$ double $>$ \mbox{\hyperlink{classFG__eval_a8d198d976aba16c940570fff2ac1ade6}{inner\+Product}} (const Vector\+Xd \&a, const A\+Dvector \&x)
+\begin{DoxyCompactList}\small\item\em Computes and returns $<$a,x$>$ where a is a constant vector and x contains decision variables. \end{DoxyCompactList}\item 
 \mbox{\Hypertarget{classFG__eval_a20f32730fd659427de307cf9fe9fe940}\label{classFG__eval_a20f32730fd659427de307cf9fe9fe940}} 
-A\+Dvector {\bfseries mat\+Vec\+Multiply} (const Matrix\+Xd \&A, const A\+Dvector \&x)
-\item 
+A\+Dvector \mbox{\hyperlink{classFG__eval_a20f32730fd659427de307cf9fe9fe940}{mat\+Vec\+Multiply}} (const Matrix\+Xd \&A, const A\+Dvector \&x)
+\begin{DoxyCompactList}\small\item\em Compute and return the matrix/vector product Ax. \end{DoxyCompactList}\item 
 \mbox{\Hypertarget{classFG__eval_a32e59236a0889df4239e43034ad1bbf1}\label{classFG__eval_a32e59236a0889df4239e43034ad1bbf1}} 
-void {\bfseries set\+Ax\+EqB} (const Matrix\+Xd \&A, const A\+Dvector \&x, const Vector\+Xd \&b, A\+Dvector \&fg, int start)
-\end{DoxyCompactItemize}
+void \mbox{\hyperlink{classFG__eval_a32e59236a0889df4239e43034ad1bbf1}{set\+Ax\+EqB}} (const Matrix\+Xd \&A, const A\+Dvector \&x, const Vector\+Xd \&b, A\+Dvector \&fg, int start)
+\begin{DoxyCompactList}\small\item\em Add the constraint Ax = b to the constraint vector fg starting at index star. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
+
+\subsection{Detailed Description}
+Helper class used by I\+P\+O\+PT to solve a N\+LP. Used here to implement a \mbox{\hyperlink{classMPC}{M\+PC}} controller We define a state space system (A,B), a L\+QR cost defined by (Q,R) with terminal cost P, we set the initial condition to x0, the horizon to N, and enforce polytopic constraints on state Fx $\ast$ x(t) $<$= bx and polytopic constraints on input Fu $\ast$ u(t) $<$= bu 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classFG__eval_a43a1e90f9d5b9729c3c3f2d4b83c2abe}\label{classFG__eval_a43a1e90f9d5b9729c3c3f2d4b83c2abe}} 
+\index{F\+G\+\_\+eval@{F\+G\+\_\+eval}!operator()@{operator()}}
+\index{operator()@{operator()}!F\+G\+\_\+eval@{F\+G\+\_\+eval}}
+\subsubsection{\texorpdfstring{operator()()}{operator()()}}
+{\footnotesize\ttfamily void F\+G\+\_\+eval\+::operator() (\begin{DoxyParamCaption}\item[{A\+Dvector \&}]{fg,  }\item[{const A\+Dvector \&}]{z }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+fg\mbox{[}0\mbox{]} contains the objective function fg\mbox{[}1+i\mbox{]}, i$>$=1 contains constraint function that is upper/lower bounded by constraints\mbox{[}i\mbox{]} z contains our optimization variables. It is partitioned as z = \mbox{[}x(0); x(1); ... ; x(\+N); u(0); u(1); ... ; u(N-\/1)\mbox{]}; 
 
 The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
 \item 

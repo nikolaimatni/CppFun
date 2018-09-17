@@ -1,0 +1,20 @@
+\documentclass{article}
+\usepackage{ifthen}
+\usepackage{epsfig}
+\usepackage{newunicodechar}
+  \newunicodechar{⁻}{${}^{-}$}% Superscript minus
+  \newunicodechar{²}{${}^{2}$}% Superscript two
+  \newunicodechar{³}{${}^{3}$}% Superscript three
+
+\pagestyle{empty}
+\begin{document}
+$min_{x,u} \sum_{t=0}^{N-1} x_t^\top Q x_t + u_t^\top R u_t$
+\pagebreak
+
+$x_{t+1} = Ax_t + Bu_t, x_0 = x0$
+\pagebreak
+
+$F_x x_t \leq b_x, F_u u_t \leq b_u$
+\pagebreak
+
+\end{document}

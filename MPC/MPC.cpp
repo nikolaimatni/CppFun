@@ -1,51 +1,41 @@
 #include "MPC.h"
+#include "../Eigen-3.3/Eigen/Core"
 #include <cassert>
 #include <cppad/cppad.hpp>
 #include <cppad/ipopt/solve.hpp>
 #include <vector>
-#include "../Eigen-3.3/Eigen/Core"
 
 using CppAD::AD;
 using namespace std;
 using namespace Eigen;
 
+/*! Helper class used by IPOPT to solve a NLP.  Used here to implement a MPC
+  controller We define a state space system (A,B), a LQR cost defined by (Q,R)
+  with terminal cost P, we set the initial condition to x0, the horizon to N,
+  and enforce polytopic constraints on state Fx * x(t) <= bx and polytopic
+  constraints on input Fu * u(t) <= bu*/
 class FG_eval {
- private:
-  // Pretty self-explanatory.  Define state space system (A,B)
-  // LQR cost defined by (Q,R) with terminal cost P
-  // Set initial condition to x0, and horizon to N
-  // Enforce polytopic constraints on state Fx * x(t) <= bx
-  // Enforce polytopic constraints on input Fu * u(t) <= bu
-
+private:
   const MatrixXd m_A, m_B, m_Q, m_R, m_P, m_Fx, m_Fu;
   const VectorXd m_x0, m_bx, m_bu;
   const int m_N;
 
- public:
+public:
   typedef CPPAD_TESTVECTOR(AD<double>) ADvector;
 
-  FG_eval(const VectorXd& x0, int N, const MatrixXd& A, const MatrixXd& B,
-          const MatrixXd& Q, const MatrixXd& R, const MatrixXd& P,
-          const MatrixXd& Fx, const MatrixXd& Fu, const VectorXd& bx,
+  FG_eval(const VectorXd &x0, int N, const MatrixXd &A, const MatrixXd &B,
+          const MatrixXd &Q, const MatrixXd &R, const MatrixXd &P,
+          const MatrixXd &Fx, const MatrixXd &Fu, const VectorXd &bx,
           const VectorXd bu)
-      : m_x0{x0},
-        m_N{N},
-        m_A{A},
-        m_B{B},
-        m_Q{Q},
-        m_R{R},
-        m_P{P},
-        m_Fx{Fx},
-        m_Fu{Fu},
-        m_bx{bx},
-        m_bu{bu} {}
+      : m_x0{x0}, m_N{N}, m_A{A}, m_B{B}, m_Q{Q}, m_R{R}, m_P{P}, m_Fx{Fx},
+        m_Fu{Fu}, m_bx{bx}, m_bu{bu} {}
 
-  void operator()(ADvector& fg, const ADvector& z) {
-    // fg[0] contains the objective function
-    // fg[1+i], i>=1 contains constraint function that is upper/lower bounded by
-    // constraints[i] z contains our optimization variables.  It is partitioned
-    // as
-    // z = [x(0); x(1); ... ; x(N); u(0); u(1); ... ; u(N-1)];
+  /*! fg[0] contains the objective function
+   fg[1+i], i>=1 contains constraint function that is upper/lower bounded by
+   constraints[i] z contains our optimization variables.  It is partitioned as
+   z = [x(0); x(1); ... ; x(N); u(0); u(1); ... ; u(N-1)];
+  */
+  void operator()(ADvector &fg, const ADvector &z) {
 
     int nx = m_A.rows();
     int nu = m_B.cols();
@@ -107,19 +97,24 @@ class FG_eval {
     fg[0] += quadForm(xN, m_P);
   }
 
-  AD<double> quadForm(const ADvector& x, const MatrixXd& M) {
+  /// Computes and returns the quadratic form x'Mx
+  AD<double> quadForm(const ADvector &x, const MatrixXd &M) {
     // returns x'Mx
     return innerProduct(x, matVecMultiply(M, x));
   }
 
-  ADvector extract(const ADvector& z, int start, int size) {
+  /*! \brief Extracts a subvector starting at index start of length size from
+    the vector z */
+  ADvector extract(const ADvector &z, int start, int size) {
     ADvector subvec(size);
-    for (int i = 0; i < size; ++i) subvec[i] = z[start + i];
+    for (int i = 0; i < size; ++i)
+      subvec[i] = z[start + i];
 
     return subvec;
   }
 
-  AD<double> innerProduct(const ADvector& a, const ADvector& x) {
+  /// Computes and returns <a,x> where both a and x contain decision variables
+  AD<double> innerProduct(const ADvector &a, const ADvector &x) {
     assert(a.size() == x.size() && "inner product failed: dim(a) != dim(x)");
     AD<double> ip = 0;
     for (int i = 0; i < a.size(); ++i) {
@@ -128,7 +123,9 @@ class FG_eval {
     return ip;
   }
 
-  AD<double> innerProduct(const VectorXd& a, const ADvector& x) {
+  /*! \brief Computes and returns <a,x> where a is a constant vector and x
+    contains decision variables */
+  AD<double> innerProduct(const VectorXd &a, const ADvector &x) {
     assert(a.size() == x.size() && "inner product failed: dim(a) != dim(x)");
     AD<double> ip = 0;
     for (int i = 0; i < a.size(); ++i) {
@@ -137,38 +134,47 @@ class FG_eval {
     return ip;
   }
 
-  ADvector matVecMultiply(const MatrixXd& A, const ADvector& x) {
+  /*! \brief Compute and return the matrix/vector product Ax */
+  ADvector matVecMultiply(const MatrixXd &A, const ADvector &x) {
     assert(A.cols() == x.size() &&
            "A*x failed because A and x are incompatible");
     int m = A.rows();
     ADvector y(m);
 
-    for (int i = 0; i < m; ++i) y[i] = innerProduct(A.row(i), x);
+    for (int i = 0; i < m; ++i)
+      y[i] = innerProduct(A.row(i), x);
 
     return y;
   }
 
-  void setAxEqB(const MatrixXd& A, const ADvector& x, const VectorXd& b,
-                ADvector& fg, int start) {
+  /*! \brief Add the constraint Ax = b to the constraint vector fg starting at
+   * index star */
+  void setAxEqB(const MatrixXd &A, const ADvector &x, const VectorXd &b,
+                ADvector &fg, int start) {
     assert(b.size() == A.rows() &&
            "b = Ax failed becasue b and A are incompatible");
 
     ADvector Ax = matVecMultiply(A, x);
 
-    for (int i = 0; i < A.rows(); ++i) fg[start + i] = b[i] - Ax[i];
+    for (int i = 0; i < A.rows(); ++i)
+      fg[start + i] = b[i] - Ax[i];
   }
 };
 
-//
-// MPC class definition implementation.
-//
+/// MPC default constructor
 MPC::MPC() {}
+
+/// MPC default destructor
 MPC::~MPC() {}
 
-VectorXd MPC::Solve(const VectorXd& x0, int N, const MatrixXd& A,
-                    const MatrixXd& B, const MatrixXd& Q, const MatrixXd& R,
-                    const MatrixXd& P, const MatrixXd& Fx, const MatrixXd& Fu,
-                    const VectorXd& bx, const VectorXd& bu) {
+/*!
+Solves the MPC subproblem min_{x,u} \sum_{t=0}^N-1 x'Qx + u'Ru + x(N)'Px(N) s.t.
+x+ = Ax + Bu, Fx*x(t) <= bx, Fu*u(t)<=bu for all t\geq 0
+ */
+VectorXd MPC::Solve(const VectorXd &x0, int N, const MatrixXd &A,
+                    const MatrixXd &B, const MatrixXd &Q, const MatrixXd &R,
+                    const MatrixXd &P, const MatrixXd &Fx, const MatrixXd &Fu,
+                    const VectorXd &bx, const VectorXd &bu) {
   bool ok = true;
   typedef CPPAD_TESTVECTOR(double) Dvector;
 
@@ -217,7 +223,6 @@ VectorXd MPC::Solve(const VectorXd& x0, int N, const MatrixXd& A,
 
   // Lower and upper limits for the constraints -- if upper == lower, then IpOpt
   // converts it to an equality constraint.
-
   Dvector constraintsLowerBound(nConstraints);
   Dvector constraintsUpperBound(nConstraints);
 
@@ -284,7 +289,8 @@ VectorXd MPC::Solve(const VectorXd& x0, int N, const MatrixXd& A,
   // applied -- TODO: add option to return Nu control inputs to compensate for
   // comp delays
   VectorXd control(nu);
-  for (int i = 0; i < nu; i++) control(i) = solution.x[(N + 1) * nx + i];
+  for (int i = 0; i < nu; i++)
+    control(i) = solution.x[(N + 1) * nx + i];
 
   return control;
 }

@@ -12,7 +12,6 @@ A class used to simulate a dynamical system driven by a controller and a disturb
 \subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\Hypertarget{classSimulator_a4cfe319e3abf788ce05e1ddb322a904e}\label{classSimulator_a4cfe319e3abf788ce05e1ddb322a904e}} 
 \mbox{\hyperlink{classSimulator_a4cfe319e3abf788ce05e1ddb322a904e}{Simulator}} (int horizon, const Vec \&x0, dynamics\+Fcn dynamics=nullptr, control\+Fcn controller=nullptr, disturb\+Fcn disturber=nullptr, Param \&params=0)
 \begin{DoxyCompactList}\small\item\em Constructer assigning horizon, IC, dynamics, controller, disturbance functions and Parameter object. \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{classSimulator_a3bdb2a9b121073e71e424203a9416b04}{step}} ()
@@ -32,11 +31,11 @@ void \mbox{\hyperlink{classSimulator_a53e30a07431c73a9be87657f0eb1b0b4}{set\+Con
 \mbox{\Hypertarget{classSimulator_a77650bca5cc7fd8e71207453339f55a5}\label{classSimulator_a77650bca5cc7fd8e71207453339f55a5}} 
 void \mbox{\hyperlink{classSimulator_a77650bca5cc7fd8e71207453339f55a5}{set\+Disturber}} (disturb\+Fcn disturber)
 \begin{DoxyCompactList}\small\item\em set disturbance function \end{DoxyCompactList}\item 
-\mbox{\Hypertarget{classSimulator_a622af3bddf0b85d4115ba06ca04f1d12}\label{classSimulator_a622af3bddf0b85d4115ba06ca04f1d12}} 
-void \mbox{\hyperlink{classSimulator_a622af3bddf0b85d4115ba06ca04f1d12}{set\+Params}} (Param params)
+\mbox{\Hypertarget{classSimulator_ae102bdd856d7fc496c2b65d42ed82971}\label{classSimulator_ae102bdd856d7fc496c2b65d42ed82971}} 
+void \mbox{\hyperlink{classSimulator_ae102bdd856d7fc496c2b65d42ed82971}{set\+Params}} (Param \&params)
 \begin{DoxyCompactList}\small\item\em set Parameters object \end{DoxyCompactList}\item 
-\mbox{\Hypertarget{classSimulator_ae7eeb81e869342f070002c64f5fe67f5}\label{classSimulator_ae7eeb81e869342f070002c64f5fe67f5}} 
-void \mbox{\hyperlink{classSimulator_ae7eeb81e869342f070002c64f5fe67f5}{set\+X0}} (Vec x0)
+\mbox{\Hypertarget{classSimulator_a9ec70f210a178cfacea6e57736df1229}\label{classSimulator_a9ec70f210a178cfacea6e57736df1229}} 
+void \mbox{\hyperlink{classSimulator_a9ec70f210a178cfacea6e57736df1229}{set\+X0}} (Vec \&x0)
 \begin{DoxyCompactList}\small\item\em set initial condition \end{DoxyCompactList}\item 
 \mbox{\Hypertarget{classSimulator_a1b7d632e3a3552977c029cf2ec9ffe6d}\label{classSimulator_a1b7d632e3a3552977c029cf2ec9ffe6d}} 
 void \mbox{\hyperlink{classSimulator_a1b7d632e3a3552977c029cf2ec9ffe6d}{set\+Verbose}} (bool verbose)
@@ -69,6 +68,19 @@ dynamics\+Fcn(Vec\& next\+State, Vec\& state, Vec\& input, Vec\& disturbance, Pa
 control\+Fcn(\+Vec\& input, Vec\& state, Param\& params)\+: uses state, params to compute input
 
 disturb\+Fcn(\+Vec\& disturbance, Param\& params)\+: uses params to compute disturbance 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classSimulator_a4cfe319e3abf788ce05e1ddb322a904e}\label{classSimulator_a4cfe319e3abf788ce05e1ddb322a904e}} 
+\index{Simulator@{Simulator}!Simulator@{Simulator}}
+\index{Simulator@{Simulator}!Simulator@{Simulator}}
+\subsubsection{\texorpdfstring{Simulator()}{Simulator()}}
+{\footnotesize\ttfamily Vec\+ParamT Simulator\+::\+Simulator (\begin{DoxyParamCaption}\item[{int}]{horizon,  }\item[{const Vec \&}]{x0,  }\item[{dynamics\+Fcn}]{dynamics = {\ttfamily nullptr},  }\item[{control\+Fcn}]{controller = {\ttfamily nullptr},  }\item[{disturb\+Fcn}]{disturber = {\ttfamily nullptr},  }\item[{Param \&}]{params = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+
+
+Constructer assigning horizon, IC, dynamics, controller, disturbance functions and Parameter object. 
+
+Creates a new simulator object; assigns appropriate function pointrers, and reserves vector$<$\+Vec$>$s for state, input and disturbance of size m\+\_\+horizon +1, m\+\_\+horizo, and m\+\_\+horizon, respectively. 
 
 \subsection{Member Function Documentation}
 \mbox{\Hypertarget{classSimulator_a3bdb2a9b121073e71e424203a9416b04}\label{classSimulator_a3bdb2a9b121073e71e424203a9416b04}} 
