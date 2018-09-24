@@ -1,5 +1,9 @@
 \hypertarget{structMpcParameters}{}\section{Mpc\+Parameters$<$ Matrix, Solver $>$ Struct Template Reference}
 \label{structMpcParameters}\index{Mpc\+Parameters$<$ Matrix, Solver $>$@{Mpc\+Parameters$<$ Matrix, Solver $>$}}
+
+
+{\ttfamily \#include $<$Parameters.\+h$>$}
+
 \subsection*{Public Attributes}
 \begin{DoxyCompactItemize}
 \item 
@@ -40,6 +44,12 @@ int {\bfseries m\+\_\+N}
 Solver {\bfseries m\+\_\+mpc}
 \end{DoxyCompactItemize}
 
+
+\subsection{Detailed Description}
+\subsubsection*{template$<$class Matrix, class Solver$>$\newline
+struct Mpc\+Parameters$<$ Matrix, Solver $>$}
+
+Paramters specifying an L\+TI system as above, except now u(k) is computed using the \mbox{\hyperlink{classMPC}{M\+PC}} controller mpc, which is specified by parameters weights (Q,R) and terminal cost P, polytopic constraint Fx $\ast$x $<$= bx, Fu $\ast$ u $<$= bu 
 
 The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
 \item 

@@ -1,0 +1,66 @@
+#ifndef SYSTEM_H
+#define SYSTEM_H
+
+#include "../Eigen-3.3/Eigen/Dense"
+#include <ctime>
+#include <iostream>
+#include <random>
+
+using namespace Eigen;
+
+class System {
+public:
+  virtual void dynamics(VectorXd &next_state, const VectorXd &state,
+                        const VectorXd &input, const VectorXd &disturbance) = 0;
+  virtual void controller(VectorXd &input, const VectorXd &state,
+                          const VectorXd &disturbance) = 0;
+  virtual void disturber(VectorXd &disturbance) = 0;
+
+  virtual ~System(){};
+};
+
+/*
+VecParamC default_random_engine Simulator<Vec, Param>::s_generator =
+    default_random_engine{(unsigned long)time(0)};
+
+VecParamC normal_distribution<double> Simulator<Vec, Param>::s_distribution =
+    normal_distribution<double>(0, 1);
+
+VecParamT double Simulator<Vec, Param>::randn() {
+  return s_distribution(s_generator);
+}
+ */
+
+class LtiSystem : public System {
+private:
+  MatrixXd a_, b_, h_, q_, r_, k_;
+  long int nx_, nu_, nw_;
+  std::default_random_engine generator_;
+  std::normal_distribution<double> distribution_;
+
+public:
+  LtiSystem(const MatrixXd &a, const MatrixXd &b, const MatrixXd &h,
+            const MatrixXd &q, const MatrixXd &r)
+      : a_{a}, b_{b}, h_{h}, q_{q}, r_{r}, nx_{a_.cols()}, nu_{b_.cols()},
+        nw_{h_.cols()}, generator_{std::default_random_engine{
+                            (unsigned long)time(0)}},
+        distribution_{std::normal_distribution<double>(0, 1)} {
+    ComputeController(nx_);
+  }
+
+  virtual void dynamics(VectorXd &next_state, const VectorXd &state,
+                        const VectorXd &input,
+                        const VectorXd &disturbance) override;
+  virtual void controller(VectorXd &input, const VectorXd &state,
+                          const VectorXd &disturbance) override;
+  virtual void disturber(VectorXd &disturbance) override;
+
+  ~LtiSystem() { std::cout << "Calling LtiSystem Destructor\n"; }
+
+  double randn() { return distribution_(generator_); }
+
+  void ComputeController(const int nx, double precision = 1e-6,
+                         int max_iter = 1000);
+};
+
+#endif /* SYSTEM_H */

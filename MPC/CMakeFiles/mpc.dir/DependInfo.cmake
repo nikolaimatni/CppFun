@@ -4,7 +4,9 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
+  "/home/nmatni/CppFun/MPC/LtiSystem.cpp" "/home/nmatni/CppFun/MPC/CMakeFiles/mpc.dir/LtiSystem.cpp.o"
   "/home/nmatni/CppFun/MPC/MPC.cpp" "/home/nmatni/CppFun/MPC/CMakeFiles/mpc.dir/MPC.cpp.o"
+  "/home/nmatni/CppFun/MPC/MySimulator.cpp" "/home/nmatni/CppFun/MPC/CMakeFiles/mpc.dir/MySimulator.cpp.o"
   "/home/nmatni/CppFun/MPC/main.cpp" "/home/nmatni/CppFun/MPC/CMakeFiles/mpc.dir/main.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")

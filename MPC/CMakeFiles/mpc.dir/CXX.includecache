@@ -1048,6 +1048,12 @@ lapacke_mangling.h
 
 /home/nmatni/CppFun/Eigen-3.3/Eigen/src/plugins/MatrixCwiseUnaryOps.h
 
+/home/nmatni/CppFun/MPC/LtiSystem.cpp
+System.h
+/home/nmatni/CppFun/MPC/System.h
+iostream
+-
+
 /home/nmatni/CppFun/MPC/MPC.cpp
 MPC.h
 /home/nmatni/CppFun/MPC/MPC.h
@@ -1063,10 +1069,32 @@ vector
 -
 
 /home/nmatni/CppFun/MPC/MPC.h
-vector
--
 ../Eigen-3.3/Eigen/Core
 /home/nmatni/CppFun/Eigen-3.3/Eigen/Core
+vector
+-
+
+/home/nmatni/CppFun/MPC/MySimulator.cpp
+MySimulator.h
+/home/nmatni/CppFun/MPC/MySimulator.h
+fstream
+-
+iostream
+-
+
+/home/nmatni/CppFun/MPC/MySimulator.h
+../Eigen-3.3/Eigen/Core
+/home/nmatni/CppFun/Eigen-3.3/Eigen/Core
+System.h
+/home/nmatni/CppFun/MPC/System.h
+iostream
+-
+memory
+-
+string
+-
+vector
+-
 
 /home/nmatni/CppFun/MPC/Parameters.h
 
@@ -1086,13 +1114,29 @@ vector
 Parameters.h
 /home/nmatni/CppFun/MPC/Parameters.h
 
-/home/nmatni/CppFun/MPC/main.cpp
+/home/nmatni/CppFun/MPC/System.h
+../Eigen-3.3/Eigen/Dense
+/home/nmatni/CppFun/Eigen-3.3/Eigen/Dense
+ctime
+-
+iostream
+-
 random
 -
+
+/home/nmatni/CppFun/MPC/main.cpp
 ../Eigen-3.3/Eigen/Dense
 /home/nmatni/CppFun/Eigen-3.3/Eigen/Dense
 MPC.h
 /home/nmatni/CppFun/MPC/MPC.h
+MySimulator.h
+/home/nmatni/CppFun/MPC/MySimulator.h
 Simulator.h
 /home/nmatni/CppFun/MPC/Simulator.h
+System.h
+/home/nmatni/CppFun/MPC/System.h
+memory
+-
+random
+-
 

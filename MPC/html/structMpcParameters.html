@@ -68,6 +68,8 @@ $(function() {
 <div class="title">MpcParameters&lt; Matrix, Solver &gt; Struct Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="Parameters_8h_source.html">Parameters.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -108,7 +110,12 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>m_N</b></td></tr>
 Solver&#160;</td><td class="memItemRight" valign="bottom"><b>m_mpc</b></td></tr>
 <tr class="separator:a35a521d3eceb5ffde01196bc67527e69"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<hr/>The documentation for this struct was generated from the following file:<ul>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><h3>template&lt;class Matrix, class Solver&gt;<br />
+struct MpcParameters&lt; Matrix, Solver &gt;</h3>
+
+<p class="">Paramters specifying an LTI system as above, except now u(k) is computed using the <a class="el" href="classMPC.html" title="MPC solver for linear system, polytopic constraints, and quadratic cost.">MPC</a> controller mpc, which is specified by parameters weights (Q,R) and terminal cost P, polytopic constraint Fx *x &lt;= bx, Fu * u &lt;= bu </p>
+</div><hr/>The documentation for this struct was generated from the following file:<ul>
 <li><a class="el" href="Parameters_8h_source.html">Parameters.h</a></li>
 </ul>
 </div><!-- contents -->

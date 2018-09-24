@@ -123,6 +123,33 @@ mpc/fast:
 	$(MAKE) -f CMakeFiles/mpc.dir/build.make CMakeFiles/mpc.dir/build
 .PHONY : mpc/fast
 
+LtiSystem.o: LtiSystem.cpp.o
+
+.PHONY : LtiSystem.o
+
+# target to build an object file
+LtiSystem.cpp.o:
+	$(MAKE) -f CMakeFiles/mpc.dir/build.make CMakeFiles/mpc.dir/LtiSystem.cpp.o
+.PHONY : LtiSystem.cpp.o
+
+LtiSystem.i: LtiSystem.cpp.i
+
+.PHONY : LtiSystem.i
+
+# target to preprocess a source file
+LtiSystem.cpp.i:
+	$(MAKE) -f CMakeFiles/mpc.dir/build.make CMakeFiles/mpc.dir/LtiSystem.cpp.i
+.PHONY : LtiSystem.cpp.i
+
+LtiSystem.s: LtiSystem.cpp.s
+
+.PHONY : LtiSystem.s
+
+# target to generate assembly for a file
+LtiSystem.cpp.s:
+	$(MAKE) -f CMakeFiles/mpc.dir/build.make CMakeFiles/mpc.dir/LtiSystem.cpp.s
+.PHONY : LtiSystem.cpp.s
+
 MPC.o: MPC.cpp.o
 
 .PHONY : MPC.o
@@ -149,6 +176,33 @@ MPC.s: MPC.cpp.s
 MPC.cpp.s:
 	$(MAKE) -f CMakeFiles/mpc.dir/build.make CMakeFiles/mpc.dir/MPC.cpp.s
 .PHONY : MPC.cpp.s
+
+MySimulator.o: MySimulator.cpp.o
+
+.PHONY : MySimulator.o
+
+# target to build an object file
+MySimulator.cpp.o:
+	$(MAKE) -f CMakeFiles/mpc.dir/build.make CMakeFiles/mpc.dir/MySimulator.cpp.o
+.PHONY : MySimulator.cpp.o
+
+MySimulator.i: MySimulator.cpp.i
+
+.PHONY : MySimulator.i
+
+# target to preprocess a source file
+MySimulator.cpp.i:
+	$(MAKE) -f CMakeFiles/mpc.dir/build.make CMakeFiles/mpc.dir/MySimulator.cpp.i
+.PHONY : MySimulator.cpp.i
+
+MySimulator.s: MySimulator.cpp.s
+
+.PHONY : MySimulator.s
+
+# target to generate assembly for a file
+MySimulator.cpp.s:
+	$(MAKE) -f CMakeFiles/mpc.dir/build.make CMakeFiles/mpc.dir/MySimulator.cpp.s
+.PHONY : MySimulator.cpp.s
 
 main.o: main.cpp.o
 
@@ -186,9 +240,15 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... mpc"
 	@echo "... edit_cache"
+	@echo "... LtiSystem.o"
+	@echo "... LtiSystem.i"
+	@echo "... LtiSystem.s"
 	@echo "... MPC.o"
 	@echo "... MPC.i"
 	@echo "... MPC.s"
+	@echo "... MySimulator.o"
+	@echo "... MySimulator.i"
+	@echo "... MySimulator.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
