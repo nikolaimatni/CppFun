@@ -1,0 +1,40 @@
+#include <array>
+#include <iostream>
+#include <vector>
+
+/* This project is based on the code found at
+ * https://www.geeksforgeeks.org/shortest-path-unweighted-graph/ */
+
+template <size_t V> using Adjacency<N> = array<vector<int>, V>;
+
+template <size_t V> void AddEdge(Adjacency<V> adj, int src, int dest) {
+  adj[src].push_back(dest);
+  adj[dest].push_back(src);
+}
+
+int main() {
+  // no. of vertices
+  int v = 8;
+
+  // array of vectors is used to store the graph
+  // in the form of an adjacency list
+  Adjacency<v> adj;
+
+  // Creating graph given in the above diagram.
+  // AddEdge function takes adjacency list, source
+  // and destination vertex as argument and forms
+  // an edge between them.
+  AddEdge(adj, 0, 1);
+  AddEdge(adj, 0, 3);
+  AddEdge(adj, 1, 2);
+  AddEdge(adj, 3, 4);
+  AddEdge(adj, 3, 7);
+  AddEdge(adj, 4, 5);
+  AddEdge(adj, 4, 6);
+  AddEdge(adj, 4, 7);
+  AddEdge(adj, 5, 6);
+  AddEdge(adj, 6, 7);
+  int source = 0, dest = 7;
+
+  return 0;
+}
