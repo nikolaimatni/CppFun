@@ -17,8 +17,6 @@
 
 using namespace std;
 
-// using raw pointers because nodes are not responsible for memory management of
-// other nodes
 class Node {
 public:
   vector<Node *> nbrs_;
@@ -27,18 +25,112 @@ public:
   Node *pred_;
   bool visited_;
 
-  Node(int id, vector<Node *> nbrs, int dist = numeric_limits<int>::max(),
+  Node(int id, vector<Node *> nbrs = {}, int dist = numeric_limits<int>::max(),
        Node *pred = nullptr, bool visited = false)
       : id_{id}, nbrs_{nbrs}, dist_{dist}, pred_{pred}, visited_{visited} {
-    //  cout << "Creating a Node with id " << id_ << "\n";
+    cout << "Creating Node " << id_ << "\n";
   }
 
   Node(const Node &node) = delete;
 
-  ~Node() { cout << "Calling Node destructor.\n"; }
+  ~Node() { cout << "Destroying node " << id_ << ".\n"; }
 };
 
 template <size_t V> using Adjacency = array<vector<int>, V>;
+
+template <size_t V> class SearchTree {
+private:
+  map<int, Node *> nodes_;
+  Adjacency<V> adj_;
+
+public:
+  SearchTree(int src_id, Adjacency<V> adj) : adj_{adj} {
+    nodes_[src_id] = new Node(src_id);
+  }
+
+  Node *GetNode(int id) {
+    if (nodes_.find(id) != nodes_.end())
+      return nodes_[id];
+
+    Node *new_node = new Node(id);
+    nodes_[id] = new_node;
+    return new_node;
+  }
+
+  void FillNeighbors(int id) {
+    for (const auto &nbr_id : adj_[id])
+      nodes_[id]->nbrs_.push_back(GetNode(nbr_id));
+  }
+
+  bool BFS(int src, int dest) {
+
+    list<Node *> q;
+
+    Node *src_node = GetNode(src);
+    src_node->visited_ = true;
+    src_node->dist_ = 0;
+    FillNeighbors(src);
+
+    // BFS initialization
+    q.push_back(src_node);
+
+    while (q.size()) {
+
+      Node *node = q.front();
+      q.pop_front(); // pop the first element of the top of the queue used to
+                     // implement BFS.
+
+      for (Node *nbr : node->nbrs_) {
+        if (!(nbr->visited_)) {
+          // standard BFS
+          cout << "Visiting node: " << nbr->id_ << "\n";
+          nbr->visited_ = true;
+          nbr->dist_ = node->dist_ + 1;
+          nbr->pred_ = node;
+          if (nbr->id_ == dest)
+            return true;
+
+          // if we didnt find our destination, let's keep going and populate
+          // stuff
+          FillNeighbors(nbr->id_);
+          q.push_back(nbr);
+        }
+      }
+    }
+    return false;
+  }
+
+  void PrintPathFromNode(int src, int dest) {
+
+    bool success = BFS(src, dest);
+    if (!success) {
+      cout << "There is no path between " << src << " and " << dest << ".\n";
+      return;
+    }
+
+    vector<int> path;
+    path.push_back(dest);
+    Node *p = GetNode(dest)->pred_;
+
+    while (p) {
+      path.push_back(p->id_);
+      p = p->pred_;
+    }
+    cout << "Src node " << src << " is " << GetNode(dest)->dist_
+         << " hops from dest node " << dest << ".\n";
+    cout << "The path between them is given by ";
+    for (auto it = path.end() - 1; it >= path.begin(); --it)
+      cout << (*it) << " ";
+    cout << ".\n";
+  }
+
+  ~SearchTree() {
+    for (auto node : nodes_) {
+      if (node.second)
+        delete node.second;
+    }
+  }
+};
 
 // helper function to get a node's neighbors from adjacency matrix, this is a
 // surrogate for a more realistic
@@ -231,17 +323,21 @@ int main() {
 
   PrintAdjacency(adj);
 
-  int source = 2, dest = 7;
+  int source = 0, dest = 3;
 
   array<int, v> dist, pred;
 
   PrintShortestPath(adj, source, dest, dist, pred);
 
-  map<int, Node *> nodes_visited;
+  SearchTree<v> searchtree{source, adj};
 
-  Node *destNode = NodeBasedBFS(adj, source, dest, nodes_visited);
+  searchtree.PrintPathFromNode(source, dest);
 
-  cout << "Did our node based implementation find a path? "
+  /*map<int, Node *> nodes_visited;
+
+    Node *destNode = NodeBasedBFS(adj, source, dest, nodes_visited);*/
+
+  /*cout << "Did our node based implementation find a path? "
        << (destNode ? "yes!" : "no :(") << "\n";
 
   if (destNode)
@@ -252,7 +348,7 @@ int main() {
   for (auto &val : nodes_visited) {
     if (val.second)
       delete val.second;
-  }
+      }*/
 
   return 0;
 }
