@@ -189,20 +189,33 @@ public:
     return false;
   }
 
+  // using pass by value because I want to sort the pointers, but this would
+  // break BFS if we did it in place.  Copying them is O(Q) for Q =
+  // max(q1.size(),q2.size()) sorting them is O(QlogQ), and finding an
+  // intersection between them using set_intersection is O(Q) so we're better
+  // off doing that than a naive search comparing elements between lists which
+  // has worst-case complexity O(Q^2)
+  // retrurns node id of a member of intersection, if it exists, -1 otherwise
   int Intersect(list<Node *> q1, list<Node *> q2) {
     auto comp = [](const Node *const &a, const Node *const &b) {
       return a->id_ > b->id_;
     };
+
     q1.sort(comp);
     q2.sort(comp);
-    // sort(q2.begin(), q2.end(),
-    //   [](const Node *a, const Node *b) { return a->id_ > b->id_; });
-    for (auto it = q1.begin(); it != q1.end(); it++) {
-      for (auto jt = q2.begin(); jt != q2.end(); jt++) {
-        if ((*it)->id_ == (*jt)->id_)
-          return (*it)->id_;
-      }
-    }
+
+    // quick check for empty intersect of sorted sets
+    if (comp(q2.back(), q1.front()) || comp(q1.back(), q2.front()))
+      return -1;
+
+    list<Node *> q1_cap_q2;
+
+    set_intersection(q1.begin(), q1.end(), q2.begin(), q2.end(),
+                     q1_cap_q2.begin(), comp);
+
+    if (q1_cap_q2.size())
+      return q1_cap_q2.front()->id_;
+
     return -1;
   }
 
