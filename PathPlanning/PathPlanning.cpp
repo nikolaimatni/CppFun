@@ -7,15 +7,14 @@
 #include <unordered_map>
 #include <vector>
 
-/* This project is based on the code found at
- * https://www.geeksforgeeks.org/shortest-path-unweighted-graph/ I wanted to
- * play around with array and vector from STL, and interface them with
- * templates, hence the restriction to need to know the size of the graph at
- * compile time.  I could drop all of this by replacing the outer array with a
- * vector and reserving space of size V at creation, or using a raw array of
- * vector<int>'s.  Another limitation of this approach is that it requires O(V)
- * space to be pre-allocated, which isn't feasible for large state-spaces, so I
- * implemented a "node" based version of everything. */
+/* This project is inspired by the code found at
+ * https://www.geeksforgeeks.org/shortest-path-unweighted-graph/ but goes well
+ * beyond what's shown there.  I've implemented a Search Tree class that builds
+ * up a Node based representation of a search tree as it performs either DFS,
+ * BFS, or Double Sided BFS (DblBFS) to find and print the shortest path between
+ * a source and destination node in a graph as specified by the adjacency list
+ * encoded as an array of vectors, where adj[i] is a vector containing integers
+ * that label a node i's neighbors*/
 
 using namespace std;
 
@@ -116,6 +115,8 @@ public:
 
     typename SearchTree<V>::SearchTree rev_tree{dest, adj_};
 
+    // Use this-> prefix here to distinguish between rev_tree to make sure we
+    // are getting nodes and filling neighbors in the right tree
     Node *src_node = this->GetNode(src);
     Node *dest_node = rev_tree.GetNode(dest);
 
@@ -154,7 +155,7 @@ public:
       // check intersection of src_q and dest_q
       int middle = Intersect(src_q, dest_q);
       if (middle >= 0) {
-        PrintPath(src, middle);
+        this->PrintPath(src, middle);
         rev_tree.PrintPath(dest, middle);
         return true;
       }
@@ -180,7 +181,7 @@ public:
       // check intersection of src_q and dest_q
       middle = Intersect(src_q, dest_q);
       if (middle >= 0) {
-        PrintPath(src, middle);
+        this->PrintPath(src, middle);
         rev_tree.PrintPath(dest, middle);
         return true;
       }
@@ -189,11 +190,13 @@ public:
   }
 
   int Intersect(list<Node *> q1, list<Node *> q2) {
-    /* sort(q1.begin(), q1.end(),
-         [](const Node *a, const Node *b) { return a->id_ > b->id_; });
-    sort(q2.begin(), q2.end(),
-         [](const Node *a, const Node *b) { return a->id_ > b->id_; });
-    */
+    auto comp = [](const Node *const &a, const Node *const &b) {
+      return a->id_ > b->id_;
+    };
+    q1.sort(comp);
+    q2.sort(comp);
+    // sort(q2.begin(), q2.end(),
+    //   [](const Node *a, const Node *b) { return a->id_ > b->id_; });
     for (auto it = q1.begin(); it != q1.end(); it++) {
       for (auto jt = q2.begin(); jt != q2.end(); jt++) {
         if ((*it)->id_ == (*jt)->id_)
