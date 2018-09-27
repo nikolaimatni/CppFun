@@ -1,8 +1,10 @@
+#include <algorithm>
 #include <array>
 #include <iostream>
 #include <limits>
 #include <list>
 #include <map>
+#include <unordered_map>
 #include <vector>
 
 /* This project is based on the code found at
@@ -17,30 +19,34 @@
 
 using namespace std;
 
-class Node {
-public:
-  vector<Node *> nbrs_;
-  int id_;
-  int dist_;
-  Node *pred_;
-  bool visited_;
+struct Node {
+
+  vector<Node *> nbrs_; // as defined by adjacency matrix
+  int id_;              // just a label
+  int dist_;            // distance from the source node
+  Node *pred_;          // predecessor in our search algorithm
+  bool visited_; // whether we've seen this node or not yet to prevent inf loops
 
   Node(int id, vector<Node *> nbrs = {}, int dist = numeric_limits<int>::max(),
        Node *pred = nullptr, bool visited = false)
       : id_{id}, nbrs_{nbrs}, dist_{dist}, pred_{pred}, visited_{visited} {
-    cout << "Creating Node " << id_ << "\n";
+    // cout << "Creating Node " << id_ << "\n";
   }
 
+  // Disallow copy construction
   Node(const Node &node) = delete;
 
-  ~Node() { cout << "Destroying node " << id_ << ".\n"; }
+  // Disallow copy assignment
+  Node &operator=(const Node &node) = delete;
+
+  ~Node() {} // cout << "Destroying node " << id_ << ".\n"; }
 };
 
 template <size_t V> using Adjacency = array<vector<int>, V>;
 
 template <size_t V> class SearchTree {
 private:
-  map<int, Node *> nodes_;
+  unordered_map<int, Node *> nodes_;
   Adjacency<V> adj_;
 
 public:
@@ -83,7 +89,7 @@ public:
       for (Node *nbr : node->nbrs_) {
         if (!(nbr->visited_)) {
           // standard BFS
-          cout << "Visiting node: " << nbr->id_ << "\n";
+          // cout << "Visiting node: " << nbr->id_ << "\n";
           nbr->visited_ = true;
           nbr->dist_ = node->dist_ + 1;
           nbr->pred_ = node;
@@ -100,14 +106,128 @@ public:
     return false;
   }
 
-  void PrintPathFromNode(int src, int dest) {
+  // Run BFS from src to dest, and in reverse from dest to src, and wait until
+  // we meet in the middle.  Improves worst case run time from O(b^d) to
+  // O(b^{d/2})
+  bool DblBFS(int src, int dest) {
 
-    bool success = BFS(src, dest);
-    if (!success) {
-      cout << "There is no path between " << src << " and " << dest << ".\n";
-      return;
+    list<Node *> src_q;
+    list<Node *> dest_q;
+
+    typename SearchTree<V>::SearchTree rev_tree{dest, adj_};
+
+    Node *src_node = this->GetNode(src);
+    Node *dest_node = rev_tree.GetNode(dest);
+
+    src_node->visited_ = true;
+    src_node->dist_ = 0;
+    this->FillNeighbors(src);
+
+    dest_node->visited_ = true;
+    dest_node->dist_ = 0;
+    rev_tree.FillNeighbors(dest);
+
+    // BFS initialization
+    src_q.push_back(src_node);
+    dest_q.push_back(dest_node);
+
+    while (src_q.size() && dest_q.size()) {
+
+      // src BFS step
+      Node *node = src_q.front();
+      src_q.pop_front(); // pop the first element of the top of the queue used
+                         // to implement BFS.
+
+      for (Node *nbr : node->nbrs_) {
+        if (!(nbr->visited_)) {
+          // standard BFS
+          // cout << "Visiting node: " << nbr->id_ << "\n";
+          nbr->visited_ = true;
+          nbr->dist_ = node->dist_ + 1;
+          nbr->pred_ = node;
+
+          this->FillNeighbors(nbr->id_);
+          src_q.push_back(nbr);
+        }
+      }
+
+      // check intersection of src_q and dest_q
+      int middle = Intersect(src_q, dest_q);
+      if (middle >= 0) {
+        PrintPath(src, middle);
+        rev_tree.PrintPath(dest, middle);
+        return true;
+      }
+
+      // dest BFS step
+      node = dest_q.front();
+      dest_q.pop_front(); // pop the first element of the top of the queue used
+                          // to implement BFS.
+
+      for (Node *nbr : node->nbrs_) {
+        if (!(nbr->visited_)) {
+          // standard BFS
+          // cout << "Visiting node: " << nbr->id_ << "\n";
+          nbr->visited_ = true;
+          nbr->dist_ = node->dist_ + 1;
+          nbr->pred_ = node;
+
+          rev_tree.FillNeighbors(nbr->id_);
+          dest_q.push_back(nbr);
+        }
+      }
+
+      // check intersection of src_q and dest_q
+      middle = Intersect(src_q, dest_q);
+      if (middle >= 0) {
+        PrintPath(src, middle);
+        rev_tree.PrintPath(dest, middle);
+        return true;
+      }
     }
+    return false;
+  }
 
+  int Intersect(list<Node *> q1, list<Node *> q2) {
+    /* sort(q1.begin(), q1.end(),
+         [](const Node *a, const Node *b) { return a->id_ > b->id_; });
+    sort(q2.begin(), q2.end(),
+         [](const Node *a, const Node *b) { return a->id_ > b->id_; });
+    */
+    for (auto it = q1.begin(); it != q1.end(); it++) {
+      for (auto jt = q2.begin(); jt != q2.end(); jt++) {
+        if ((*it)->id_ == (*jt)->id_)
+          return (*it)->id_;
+      }
+    }
+    return -1;
+  }
+
+  void DFS(int src, int dest, bool &success) {
+    if (success)
+      return;
+
+    Node *src_node = GetNode(src);
+    src_node->visited_ = true;
+    FillNeighbors(src);
+
+    for (const auto &nbr : src_node->nbrs_) {
+      if (!(nbr->visited_) && !success) {
+        nbr->visited_ = true;
+        nbr->pred_ = src_node;
+
+        if (nbr->id_ == dest) {
+          success = true;
+          return;
+        }
+
+        FillNeighbors(nbr->id_);
+        DFS(nbr->id_, dest, success);
+      }
+    }
+  }
+
+  void PrintPath(int src, int dest) {
     vector<int> path;
     path.push_back(dest);
     Node *p = GetNode(dest)->pred_;
@@ -116,15 +236,50 @@ public:
       path.push_back(p->id_);
       p = p->pred_;
     }
-    cout << "Src node " << src << " is " << GetNode(dest)->dist_
-         << " hops from dest node " << dest << ".\n";
-    cout << "The path between them is given by ";
+
+    cout << "A path between them is given by ";
     for (auto it = path.end() - 1; it >= path.begin(); --it)
       cout << (*it) << " ";
     cout << ".\n";
   }
 
+  void PrintPathFromNodeBFS(int src, int dest) {
+
+    bool success = BFS(src, dest);
+    if (!success) {
+      cout << "There is no path between " << src << " and " << dest << ".\n";
+      return;
+    }
+
+    cout << "Src node " << src << " is " << GetNode(dest)->dist_
+         << " hops from dest node " << dest << ".\n";
+
+    PrintPath(src, dest);
+  }
+
+  void PrintPathFromNodeDFS(int src, int dest) {
+    bool success = false;
+    DFS(src, dest, success);
+
+    if (!success) {
+      cout << "There is no path between " << src << " and " << dest << ".\n";
+      return;
+    }
+
+    PrintPath(src, dest);
+  }
+
+  void Clear() {
+    for (auto node : nodes_) {
+      if (node.second)
+        delete node.second;
+    }
+
+    nodes_.clear();
+  }
+
   ~SearchTree() {
+    // cout << "Search tree destructor\n";
     for (auto node : nodes_) {
       if (node.second)
         delete node.second;
@@ -195,7 +350,7 @@ bool BFS(const Adjacency<V> &adj, int src, int dest, array<int, V> &dist,
         // standard BFS
         visited[nbr] = true;
         q.push_back(nbr);
-        cout << "Visited node " << nbr << ".\n";
+        // cout << "Visited node " << nbr << ".\n";
         // path planning related stuff
         dist[nbr] = dist[node] + 1;
         pred[nbr] = node;
@@ -223,7 +378,7 @@ Node *NodeBasedBFS(const Adjacency<V> &adj, int src, int dest,
   q.push_back(src_node);
   nodes_visited[src] = src_node;
 
-  cout << "entering while loop\n";
+  // cout << "entering while loop\n";
   while (q.size()) {
     Node *node = q.front();
     q.pop_front(); // pop the first element of the top of the queue used to
@@ -232,7 +387,7 @@ Node *NodeBasedBFS(const Adjacency<V> &adj, int src, int dest,
     for (Node *nbr : node->nbrs_) {
       if (!(nbr->visited_)) {
         // standard BFS
-        cout << "Visiting node: " << nbr->id_ << "\n";
+        // cout << "Visiting node: " << nbr->id_ << "\n";
         nbr->visited_ = true;
         // nodes_visited[nbr->id_] = nbr;
         nbr->dist_ = node->dist_ + 1;
@@ -240,7 +395,8 @@ Node *NodeBasedBFS(const Adjacency<V> &adj, int src, int dest,
         if (nbr->id_ == dest)
           return nbr;
 
-        // if we didnt find our destination, let's keep going and populate stuff
+        // if we didnt find our destination, let's keep going and populate
+        // stuff
 
         nbr->nbrs_ = GetNeighbors(nbr->id_, adj, nodes_visited);
 
@@ -323,7 +479,7 @@ int main() {
 
   PrintAdjacency(adj);
 
-  int source = 0, dest = 3;
+  int source = 5, dest = 2;
 
   array<int, v> dist, pred;
 
@@ -331,7 +487,18 @@ int main() {
 
   SearchTree<v> searchtree{source, adj};
 
-  searchtree.PrintPathFromNode(source, dest);
+  cout << "Calling BFS\n";
+  searchtree.PrintPathFromNodeBFS(source, dest);
+
+  searchtree.Clear();
+
+  cout << "Calling DFS\n";
+  searchtree.PrintPathFromNodeDFS(source, dest);
+
+  searchtree.Clear();
+  cout << "Calling DblBFS\n";
+
+  searchtree.DblBFS(source, dest);
 
   /*map<int, Node *> nodes_visited;
 
