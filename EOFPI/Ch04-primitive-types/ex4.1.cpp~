@@ -1,0 +1,8 @@
+#include <iostream>
+
+int main() {
+  using namespace std;
+
+  cout << "The parity of the word is: \n";
+  return 0;
+}
