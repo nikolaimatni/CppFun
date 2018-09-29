@@ -1,6 +1,8 @@
 #include <array>
+#include <functional>
 #include <iostream>
 #include <list>
+#include <vector>
 
 using namespace std;
 
@@ -22,6 +24,14 @@ struct HeapNode {
       : val_(val), left_(nullptr), right_(nullptr), parent_(nullptr) {}
 };
 
+/*this was an exercise in futility, as there's a much simpler way to do this
+ * using a vector to represent the heap.  This was still good fun to play around
+ * with the tree structure.  The motivation to use node based representations in
+ * the other seetings (shortest path using BFS an DblBFS) was to avoid having to
+ * hold the entire data-structure in memory in the event that there were local
+ * rules to determine node's neighbors.  This motivation goes away for a
+ * BinaryHeap because the it is a data-structure meant to be held entirely in
+ * memory (e.g., to implement a priority queue) */
 class Heap {
 private:
   HeapNode *root_;
@@ -257,12 +267,12 @@ Node *FCAHelper(Node *root, Node *n1, Node *n2) {
   if ((n1_left && n2_right))
     return root; // if n1 and n2 are in different subtrees, this is the FCA
 
-  if (n1_left && !n2_right)
+  if (n1_left)
     return FCAHelper(
         root->left_, n1,
         n2); // if everyone is in left subtree find FCA in left subtree
 
-  if (!n1_left && n2_right)
+  if (n2_right)
     return FCAHelper(root->right_, n1,
                      n2); // ditto but if everyone is in right subtree
 
@@ -293,6 +303,118 @@ Node *FCA(Node *root, Node *n1, Node *n2) {
   return FCAHelper(root, n1, n2);
 }
 
+template <typename Item> class ArrayHeap {
+  using Compare = function<bool(const Item &, const Item &)>;
+
+  // we leave position 0 empty, root is at 1, so then
+  // node i's left child is at 2*i and 2*i + 1
+  // node i's parent is i/2;
+
+private:
+  vector<Item> nodes_;
+  Compare comp_;
+
+public:
+  ArrayHeap(Item root, Compare comp) : nodes_{vector<Item>(2)}, comp_(comp) {
+    nodes_[1] = (root);
+  }
+  Item root() { return nodes_[1]; }
+  Item get_node(int i) { return nodes_[i]; }
+
+  void Insert(Item node) {
+    nodes_.push_back(node);
+
+    int i = nodes_.size() - 1;
+    int i_parent = i / 2;
+
+    while (i_parent > 0 && comp_(nodes_[i], nodes_[i_parent])) {
+      // while we're not at the root and our parent precedes us, swap with
+      // parent
+      swap(nodes_[i], nodes_[i_parent]);
+      i = i_parent;
+      i_parent = i / 2;
+    }
+  }
+
+  void ExtractRoot() {
+    // swap root and last item, then delete last item
+    swap(nodes_[1], nodes_.back());
+    nodes_.pop_back();
+
+    // now bubble down
+    int i = 1;
+    int left = 2;
+    int right = 3;
+
+    while (left < nodes_.size() || right < nodes_.size()) {
+      // while we haven't reached the end of the graph yet
+      bool goleft = comp_(nodes_[left], nodes_[i]) &&
+                    left < nodes_.size(); // does left child precede i and is it
+                                          // still in the graph
+      bool goright = comp_(nodes_[right], nodes_[i]) &&
+                     right < nodes_.size(); // does right child precede i and
+                                            // is it still in the graph
+      int smallest = 0;
+
+      if (goleft)
+        smallest = left;
+      if (goright && comp_(nodes_[right], nodes_[left]))
+        smallest = right;
+
+      if (smallest) {
+        swap(nodes_[i], nodes_[smallest]);
+        i = smallest;
+        left = 2 * i;
+        right = 2 * i + 1;
+      } else {
+        return;
+      }
+
+      /*      if (goleft && goright) {
+        // if both children precede, swap with minimum
+        int gonext = comp_(nodes_[left], nodes_[right]) ? left : right;
+        swap(nodes_[i], nodes_[gonext]);
+        i = gonext;
+        left = 2 * i;
+        right = 2 * i + 1;
+      } else if (goleft) {
+        // if only left precedes, swap with left
+        swap(nodes_[i], nodes_[left]);
+        i = left;
+        left = 2 * i;
+        right = 2 * i + 1;
+      } else if (goright) {
+        // if only right precedes, swap with right
+        swap(nodes_[i], nodes_[right]);
+        i = right;
+        left = 2 * i;
+        right = 2 * i + 1;
+      } else {
+        // if neither children precedes, we're done!
+        return;
+        }*/
+    }
+  }
+
+  int size() { return nodes_.size(); }
+};
+
+template <typename Item, typename Compare>
+void HeapSort(vector<Item> &input, Compare comp) {
+  ArrayHeap<Item> heap(input.back(), comp);
+  input.pop_back();
+
+  while (input.size()) {
+    heap.Insert(input.back());
+    input.pop_back();
+  }
+
+  while (heap.size() - 1) {
+    input.push_back(heap.root());
+    heap.ExtractRoot();
+  }
+}
+
 int main() {
   const int N = 7;
   array<int, N> input{1, 2, 3, 4, 5, 18, 21};
@@ -303,7 +425,42 @@ int main() {
 
   cout << (fca ? fca->val_ : -1111) << "\n";
 
-  HeapNode heap_root(10);
+  auto comp = [](const int &a, const int &b) { return a < b; };
+  ArrayHeap<int> heap(10, comp);
+
+  auto print_heap = [&heap]() {
+    for (int i = 1; i < heap.size(); i++)
+      cout << heap.get_node(i) << " ";
+    cout << "\n";
+  };
+
+  heap.Insert(5);
+  heap.Insert(8);
+  heap.Insert(4);
+  heap.Insert(1);
+
+  print_heap();
+
+  heap.ExtractRoot();
+
+  print_heap();
+
+  heap.ExtractRoot();
+
+  print_heap();
+
+  vector<int> val{12, 23, 0, -12, 45, 1, 43, 8, 10, 4};
+  HeapSort(val, [](const int a, const int b) { return a * a > b * b; });
+
+  for (int i = 0; i < val.size(); i++)
+    cout << val[i] << " ";
+  cout << "\n";
+
+  //  1 4 8 10 5
+  //  4 5 8 10
+  //  5 10 8
+
+  /*HeapNode heap_root(10);
   Heap heap(&heap_root);
 
   for (int i = 9; i > 0; --i)
@@ -318,7 +475,8 @@ int main() {
 
   HeapNode *hr = heap.root();
 
-  cout << hr->val_ << " -l- " << hr->left_->val_ << "; -r- " << hr->right_->val_
+  cout << hr->val_ << " -l- " << hr->left_->val_ << "; -r- " <<
+  hr->right_->val_
        << "\n";
 
   cout << "This should equal 1238 " << hr->val_ << hr->left_->val_
@@ -330,6 +488,7 @@ int main() {
   cout << heap.last() << " is last's val after extraction \n";
   cout << "This shoudl equal 23816 " << hr->val_ << hr->left_->val_
        << hr->left_->right_->val_ << hr->left_->right_->left_->val_ << "\n";
+  */
 
   return 0;
 }
