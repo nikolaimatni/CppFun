@@ -30,7 +30,7 @@ struct HeapNode {
  * the other seetings (shortest path using BFS an DblBFS) was to avoid having to
  * hold the entire data-structure in memory in the event that there were local
  * rules to determine node's neighbors.  This motivation goes away for a
- * BinaryHeap because the it is a data-structure meant to be held entirely in
+ * BinaryHeap because it is a data-structure meant to be held entirely in
  * memory (e.g., to implement a priority queue) */
 class Heap {
 private:
@@ -415,11 +415,39 @@ void HeapSort(vector<Item> &input, Compare comp) {
   }
 }
 
+void InOrderTraversal(Node *node) {
+  if (node) {
+    InOrderTraversal(node->left_);
+    cout << node->val_ << " ";
+    InOrderTraversal(node->right_);
+  }
+}
+
+void PreOrderTraversal(Node *node) {
+  if (node) {
+    cout << node->val_ << " ";
+    PreOrderTraversal(node->left_);
+    PreOrderTraversal(node->right_);
+  }
+}
+
+void PostOrderTraversal(Node *node) {
+  if (node) {
+    PostOrderTraversal(node->left_);
+    PostOrderTraversal(node->right_);
+    cout << node->val_ << " ";
+  }
+}
+
 int main() {
   const int N = 7;
   array<int, N> input{1, 2, 3, 4, 5, 18, 21};
 
   Node *root = BinTree(input, 0, N);
+
+  cout << "Post order traversal: ";
+  PostOrderTraversal(root);
+  cout << "\n";
 
   Node *fca = FCA(root, root->right_->left_, root->right_->right_);
 
