@@ -17,4 +17,6 @@ public:
   virtual vector<double> Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs);
 };
 
+class NlpMPC : public MPC {};
+
 #endif /* MPC_H */

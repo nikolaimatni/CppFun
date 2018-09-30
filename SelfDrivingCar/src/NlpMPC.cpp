@@ -3,12 +3,11 @@
 #include "MPC.h"
 #include <cppad/cppad.hpp>
 #include <cppad/ipopt/solve.hpp>
+#include <vector>
 
 using CppAD::AD;
 
-// TODO: Set the timestep length and duration
-size_t N = 10;
-double dt = 0.1;
+// TODO: Set the
 
 // This value assumes the model presented in the classroom is used.
 //
@@ -20,17 +19,6 @@ double dt = 0.1;
 // presented in the classroom matched the previous radius.
 //
 // This is the length from front to CoG that has a similar radius.
-const double Lf = 2.67;
-
-double ref_v = 70;
-size_t x_start = 0;
-size_t y_start = x_start + N;
-size_t psi_start = y_start + N;
-size_t v_start = psi_start + N;
-size_t cte_start = v_start + N;
-size_t epsi_start = cte_start + N;
-size_t delta_start = epsi_start + N;
-size_t a_start = delta_start + N - 1;
 
 //
 // MPC class definition implementation.
@@ -38,7 +26,7 @@ size_t a_start = delta_start + N - 1;
 // MPC::MPC() {}
 // MPC::~MPC() {}
 
-vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
+vector<double> NlpMPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
 
   bool ok = true;
   size_t i;
@@ -125,7 +113,7 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   constraints_upperbound[epsi_start] = epsi;
 
   // object that computes objective and constraints
-  FG_eval fg_eval(coeffs);
+  // FG_eval fg_eval(coeffs);
 
   FGBikeModel fgbike(N, 6, 2, 1, dt, ref_v, coeffs);
   FG &fg = fgbike;

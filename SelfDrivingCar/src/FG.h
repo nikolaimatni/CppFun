@@ -4,11 +4,13 @@
 #include "Eigen-3.3/Eigen/Core"
 #include <cmath>
 #include <cppad/cppad.hpp>
+#include <vector>
 
 using CppAD::AD;
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
 using std::max;
+using std::vector;
 
 using ADVec = CPPAD_TESTVECTOR(AD<double>);
 
