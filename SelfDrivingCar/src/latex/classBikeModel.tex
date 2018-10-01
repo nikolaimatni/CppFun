@@ -40,7 +40,7 @@ Implementation of simple bike model used for direct N\+LP. The cost function par
 \subsubsection{\texorpdfstring{set\+\_\+coeffs()}{set\_coeffs()}}
 {\footnotesize\ttfamily void Bike\+Model\+::set\+\_\+coeffs (\begin{DoxyParamCaption}\item[{const Vector\+Xd \&}]{coeffs }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
-call this before every mpc solve to update reference trajectory, which is specified in terms of polynomial = \{i=0\}$^\wedge$2 coeffs\mbox{[}i\mbox{]} $\ast$ pow(x,i) \mbox{\Hypertarget{classBikeModel_a920787379d6fef804f46bc1f3f885a89}\label{classBikeModel_a920787379d6fef804f46bc1f3f885a89}} 
+call this before every mpc solve to update reference trajectory, which is specified in terms of polynomial = sum\+\_\+\{i=0\}$^\wedge$2 coeffs\mbox{[}i\mbox{]} $\ast$ pow(x,i) \mbox{\Hypertarget{classBikeModel_a920787379d6fef804f46bc1f3f885a89}\label{classBikeModel_a920787379d6fef804f46bc1f3f885a89}} 
 \index{Bike\+Model@{Bike\+Model}!xstart@{xstart}}
 \index{xstart@{xstart}!Bike\+Model@{Bike\+Model}}
 \subsubsection{\texorpdfstring{xstart()}{xstart()}}

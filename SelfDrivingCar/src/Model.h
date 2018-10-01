@@ -27,7 +27,7 @@ protected:
   int delay_; ///> input delay: x(t+1) = f(x(t),u(t-delay_))
   vector<int>
       starts_; ///> bookkeeping vector: starts_[i] says where in optimization
-               /// vector vars component i (either a scalar state or input)
+               ///> vector vars component i (either a scalar state or input)
 
   /// Pure virtual function: should return per-stage cost
   virtual AD<double> Cost(int t, const ADVec &xt, const ADVec &ut,
@@ -134,20 +134,14 @@ private:
   double dt_;       ///>sampling time dt
   double vref_;     ///>reference velocity
   VectorXd coeffs_; ///>coefficients
-  enum State {
-    X,
-    Y,
-    PSI,
-    V,
-    CTE,
-    EPSI
-  }; ///>positions of different state components in state, i.e. state(t) =
-     ///[x(t); y(t); psi(t); cte(t); epsi(t)].  Also specifies starts
-  enum Input {
-    DELTA,
-    A
-  }; ///>positions of different input components in input u(t), i.e. ut(t) =
-     ///[delta(t); a(t)].  Also specifies starts (offset by nx_)
+  /*!\enum BikeModel::State positions of different state components in state,
+   * i.e. if state(t) =
+   * [x(t); y(t); psi(t); cte(t); epsi(t)] then state[X](t) = x(t)*/
+  enum State { X, Y, PSI, V, CTE, EPSI };
+
+  ///\enum positions of different input components in input u(t), i.e. ut(t) =
+  ///[delta(t); a(t)].  Also specifies starts (offset by nx_)
+  enum Input { DELTA, A };
 
   const double Lf_ = 2.67; ///>model parameter roughly specifying turning radius
 
@@ -212,7 +206,7 @@ public:
       : Model(N, nx, nu, delay), dt_(dt), vref_(vref), coeffs_{coeffs} {}
 
   /// call this before every mpc solve to update reference trajectory, which is
-  /// specified in terms of polynomial = \sum_{i=0}^2 coeffs[i] * pow(x,i)
+  /// specified in terms of polynomial = sum_{i=0}^2 coeffs[i] * pow(x,i)
   void set_coeffs(const VectorXd &coeffs) { coeffs_ = coeffs; }
 
   virtual int xstart() override { return starts_[X]; }

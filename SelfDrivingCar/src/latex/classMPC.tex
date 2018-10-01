@@ -56,26 +56,22 @@ virtual void {\bfseries Setup\+Options} (string \&options)
 \begin{DoxyCompactItemize}
 \item 
 \mbox{\Hypertarget{classMPC_a2b810b20d87323cce8285d14230c917c}\label{classMPC_a2b810b20d87323cce8285d14230c917c}} 
-size\+\_\+t {\bfseries N\+\_\+}
-\item 
-\mbox{\Hypertarget{classMPC_abbf9a3b26a6cbc6cad87cac1c8f2aaaf}\label{classMPC_abbf9a3b26a6cbc6cad87cac1c8f2aaaf}} 
+size\+\_\+t \mbox{\hyperlink{classMPC_a2b810b20d87323cce8285d14230c917c}{N\+\_\+}}
+\begin{DoxyCompactList}\small\item\em horizon is N\+\_\+ -\/1 \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classModel}{Model}} \& \mbox{\hyperlink{classMPC_abbf9a3b26a6cbc6cad87cac1c8f2aaaf}{model\+\_\+}}
-\begin{DoxyCompactList}\small\item\em \begin{quote}
-horizon is N\+\_\+ -\/1\end{quote}
-\end{DoxyCompactList}\item 
-size\+\_\+t \mbox{\hyperlink{classMPC_a9a9db53c26d46e7579d02a5d08c0358c}{nvars\+\_\+}}
+\item 
+\mbox{\Hypertarget{classMPC_a9a9db53c26d46e7579d02a5d08c0358c}\label{classMPC_a9a9db53c26d46e7579d02a5d08c0358c}} 
+size\+\_\+t {\bfseries nvars\+\_\+}
 \item 
 \mbox{\Hypertarget{classMPC_ac89334cea51103f0a4a20268b7d748ef}\label{classMPC_ac89334cea51103f0a4a20268b7d748ef}} 
 size\+\_\+t \mbox{\hyperlink{classMPC_ac89334cea51103f0a4a20268b7d748ef}{nconstraints\+\_\+}}
 \begin{DoxyCompactList}\small\item\em \begin{quote}
 number of optimizaiton variables\end{quote}
 \end{DoxyCompactList}\item 
-\mbox{\Hypertarget{classMPC_a821e5a57b25e8c83aaae02d44dab3ea8}\label{classMPC_a821e5a57b25e8c83aaae02d44dab3ea8}} 
 \mbox{\hyperlink{structBounds}{Bounds}} \mbox{\hyperlink{classMPC_a821e5a57b25e8c83aaae02d44dab3ea8}{bounds\+\_\+}}
-\begin{DoxyCompactList}\small\item\em \begin{quote}
-number of constraints (excluding box constraints)\end{quote}
-\end{DoxyCompactList}\item 
-vector$<$ int $>$ \mbox{\hyperlink{classMPC_af52144a70629c4809d28790fd7c0fdf3}{starts\+\_\+}}
+\item 
+\mbox{\Hypertarget{classMPC_af52144a70629c4809d28790fd7c0fdf3}\label{classMPC_af52144a70629c4809d28790fd7c0fdf3}} 
+vector$<$ int $>$ {\bfseries starts\+\_\+}
 \item 
 Cpp\+A\+D\+::vector$<$ double $>$ \mbox{\hyperlink{classMPC_a303dcbda2e7d051f5f8a34e01bc414bc}{warmstart\+\_\+}}
 \end{DoxyCompactItemize}
@@ -94,31 +90,29 @@ Base \mbox{\hyperlink{classMPC}{M\+PC}} class. Whereas the model that you pass i
 Solve the model given an initial state and a reference trajectory. Return the first actuations. 
 
 \subsection{Member Data Documentation}
-\mbox{\Hypertarget{classMPC_a9a9db53c26d46e7579d02a5d08c0358c}\label{classMPC_a9a9db53c26d46e7579d02a5d08c0358c}} 
-\index{M\+PC@{M\+PC}!nvars\+\_\+@{nvars\+\_\+}}
-\index{nvars\+\_\+@{nvars\+\_\+}!M\+PC@{M\+PC}}
-\subsubsection{\texorpdfstring{nvars\+\_\+}{nvars\_}}
-{\footnotesize\ttfamily size\+\_\+t M\+P\+C\+::nvars\+\_\+\hspace{0.3cm}{\ttfamily [protected]}}
+\mbox{\Hypertarget{classMPC_a821e5a57b25e8c83aaae02d44dab3ea8}\label{classMPC_a821e5a57b25e8c83aaae02d44dab3ea8}} 
+\index{M\+PC@{M\+PC}!bounds\+\_\+@{bounds\+\_\+}}
+\index{bounds\+\_\+@{bounds\+\_\+}!M\+PC@{M\+PC}}
+\subsubsection{\texorpdfstring{bounds\+\_\+}{bounds\_}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structBounds}{Bounds}} M\+P\+C\+::bounds\+\_\+\hspace{0.3cm}{\ttfamily [protected]}}
 
 \begin{quote}
-\mbox{\hyperlink{classModel}{Model}} object specifying dynamics, cost function, and \end{quote}
-additional constraints beyond box constraints in state and input \mbox{\Hypertarget{classMPC_af52144a70629c4809d28790fd7c0fdf3}\label{classMPC_af52144a70629c4809d28790fd7c0fdf3}} 
-\index{M\+PC@{M\+PC}!starts\+\_\+@{starts\+\_\+}}
-\index{starts\+\_\+@{starts\+\_\+}!M\+PC@{M\+PC}}
-\subsubsection{\texorpdfstring{starts\+\_\+}{starts\_}}
-{\footnotesize\ttfamily vector$<$int$>$ M\+P\+C\+::starts\+\_\+\hspace{0.3cm}{\ttfamily [protected]}}
+number of constraints (excluding box constraints) \end{quote}
+\mbox{\hyperlink{structBounds}{Bounds}} struct specifying input/state box constraints and whatever else a user chooses to add \mbox{\Hypertarget{classMPC_abbf9a3b26a6cbc6cad87cac1c8f2aaaf}\label{classMPC_abbf9a3b26a6cbc6cad87cac1c8f2aaaf}} 
+\index{M\+PC@{M\+PC}!model\+\_\+@{model\+\_\+}}
+\index{model\+\_\+@{model\+\_\+}!M\+PC@{M\+PC}}
+\subsubsection{\texorpdfstring{model\+\_\+}{model\_}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classModel}{Model}}\& M\+P\+C\+::model\+\_\+\hspace{0.3cm}{\ttfamily [protected]}}
 
-\begin{quote}
-\mbox{\hyperlink{structBounds}{Bounds}} struct specifying input/state box constraints and \end{quote}
-whatever else a user chooses to add \mbox{\Hypertarget{classMPC_a303dcbda2e7d051f5f8a34e01bc414bc}\label{classMPC_a303dcbda2e7d051f5f8a34e01bc414bc}} 
+\mbox{\hyperlink{classModel}{Model}} object specifying dynamics, cost function, and additional constraints beyond box constraints in state and input \mbox{\Hypertarget{classMPC_a303dcbda2e7d051f5f8a34e01bc414bc}\label{classMPC_a303dcbda2e7d051f5f8a34e01bc414bc}} 
 \index{M\+PC@{M\+PC}!warmstart\+\_\+@{warmstart\+\_\+}}
 \index{warmstart\+\_\+@{warmstart\+\_\+}!M\+PC@{M\+PC}}
 \subsubsection{\texorpdfstring{warmstart\+\_\+}{warmstart\_}}
 {\footnotesize\ttfamily Cpp\+A\+D\+::vector$<$double$>$ M\+P\+C\+::warmstart\+\_\+\hspace{0.3cm}{\ttfamily [protected]}}
 
 \begin{quote}
-bookkeeping\+: this is set using the starts\+\_\+ vector of \end{quote}
-\mbox{\hyperlink{classModel}{Model}} to ensure consistency 
+bookkeeping\+: this is set using the starts\+\_\+ vector of \mbox{\hyperlink{classModel}{Model}} to ensure consistency \end{quote}
+
 
 The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
 \item 

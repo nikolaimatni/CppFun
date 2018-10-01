@@ -7,5 +7,5 @@ var searchData=
   ['setupwarmstart',['SetupWarmStart',['../classMPC.html#aebb4b7be7b8b571e5c542c623cfa1aba',1,'MPC']]],
   ['solve',['Solve',['../classMPC.html#ae07d02edbf31f94d738cfa206e5b2d77',1,'MPC']]],
   ['starts',['starts',['../classModel.html#a206c5adc8789eed1598f61be030247af',1,'Model']]],
-  ['starts_5f',['starts_',['../classModel.html#a9ae228c1b5463523cf3f3a844ec7ffc5',1,'Model::starts_()'],['../classMPC.html#af52144a70629c4809d28790fd7c0fdf3',1,'MPC::starts_()']]]
+  ['starts_5f',['starts_',['../classModel.html#a9ae228c1b5463523cf3f3a844ec7ffc5',1,'Model']]]
 ];

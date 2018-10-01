@@ -34,16 +34,19 @@ struct Bounds {
  * solver with a suitably shifted version of the last run's solution.  */
 class MPC {
 protected:
-  size_t N_;     ///> horizon is N_ -1
-  Model &model_; ///> Model object specifying dynamics, cost function, and
-                 /// additional constraints beyond box constraints in state and
-                 /// input
-  size_t nvars_; ///> number of optimizaiton variables
+  /// horizon is N_ -1
+  size_t N_;
+  /// Model object specifying dynamics, cost function, and
+  /// additional constraints beyond box constraints in state and
+  /// input
+  Model &model_;
+  size_t nvars_;        ///> number of optimizaiton variables
   size_t nconstraints_; ///> number of constraints (excluding box constraints)
-  Bounds bounds_; ///> Bounds struct specifying input/state box constraints and
-                  /// whatever else a user chooses to add
+  /// Bounds struct specifying input/state box constraints and
+  /// whatever else a user chooses to add
+  Bounds bounds_;
   vector<int> starts_; ///> bookkeeping: this is set using the starts_ vector of
-                       /// Model to ensure consistency
+                       ///> Model to ensure consistency
 
   CppAD::vector<double>
       warmstart_; ///> remember last run's solution for warm starting
@@ -85,8 +88,8 @@ public:
 };
 
 ///\brief Place holder for what I'm working on now -- not clear if the
-///sequential linearization implementation will require a modification to base
-///MPC class, or will be fine with just a new model
+/// sequential linearization implementation will require a modification to base
+/// MPC class, or will be fine with just a new model
 class SeqLinMPC : public MPC {
 
 public:
