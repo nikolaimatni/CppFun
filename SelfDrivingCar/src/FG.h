@@ -42,6 +42,7 @@ private:
   }
 
 public:
+  // need to have this typedef exactly as is for this to work with IpOPT;
   typedef CPPAD_TESTVECTOR(AD<double>) ADvector;
 
   FG(int N, int nx, int nu, int delay)
@@ -53,6 +54,7 @@ public:
       starts_.push_back(starts_[nx_ + i] + N - 1);
   }
 
+  const vector<int> &starts() const { return starts_; }
   int nx() { return nx_; }
   int nu() { return nu_; }
   int N() { return N_; }
@@ -152,8 +154,10 @@ private:
 
 public:
   FGBikeModel(int N, int nx, int nu, int delay, double dt, double vref,
-              VectorXd coeffs)
+              const VectorXd &coeffs = {})
       : FG(N, nx, nu, delay), dt_(dt), vref_(vref), coeffs_{coeffs} {}
+
+  void set_coeffs(const VectorXd &coeffs) { coeffs_ = coeffs; }
 
   virtual ~FGBikeModel() {}
 };

@@ -1,13 +1,16 @@
 #include "Eigen-3.3/Eigen/Core"
 #include "Eigen-3.3/Eigen/QR"
+#include "FG.h"
 #include "MPC.h"
 #include "json.hpp"
 #include <chrono>
 #include <iostream>
 #include <math.h>
+#include <string>
 #include <thread>
 #include <uWS/uWS.h>
 #include <vector>
+using namespace std;
 
 // for convenience
 using json = nlohmann::json;
@@ -68,11 +71,22 @@ Eigen::VectorXd polyfit(Eigen::VectorXd xvals, Eigen::VectorXd yvals,
 int main() {
   uWS::Hub h;
 
-  // MPC is initialized here!
-  MPC mpc;
+  Bounds bounds;
 
-  h.onMessage([&mpc](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
-                     uWS::OpCode opCode) {
+  bounds.x_up_ = vector<double>(6, 1e19);
+  bounds.x_low_ = vector<double>(6, -1e19);
+  bounds.u_up_ = vector<double>{deg2rad(25), 1};
+  bounds.u_low_ = vector<double>{-1 * deg2rad(25), -1};
+
+  // MPC is initialized here!
+  FGBikeModel bike_model(10, 6, 2, 1, 0.1, 70);
+  FG &model = bike_model;
+
+  NlpMPC nlmpc(10, model, 0.1, 10 * 6 + 9 * 2, 10 * 6, bounds);
+  MPC &mpc = nlmpc;
+
+  h.onMessage([&mpc, &bike_model](uWS::WebSocket<uWS::SERVER> ws, char *data,
+                                  size_t length, uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
@@ -124,9 +138,7 @@ int main() {
           double steer_value = j[1]["steering_angle"];
           double throttle_value = j[1]["throttle"];
 
-          cout << "throttle_value obtianed from json message: "
-               << throttle_value << "\n";
-
+          bike_model.set_coeffs(coeffs);
           Eigen::VectorXd state(6);
           state << 0, 0, 0, v, cte, epsi;
           auto vars = mpc.Solve(state, coeffs);
@@ -139,8 +151,6 @@ int main() {
           // [-deg2rad(25), deg2rad(25] instead of [-1, 1].
           msgJson["steering_angle"] = steer_value / (deg2rad(25));
           msgJson["throttle"] = throttle_value;
-          cout << "Steering angle: " << steer_value
-               << " and throttle: " << throttle_value << "\n";
 
           // Display the MPC predicted trajectory
           vector<double> mpc_x_vals;
