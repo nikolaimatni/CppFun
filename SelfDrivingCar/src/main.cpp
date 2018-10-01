@@ -12,6 +12,25 @@
 #include <vector>
 using namespace std;
 
+/*! \mainpage
+Code base being developed to interface with the Udacity Unity3d Self-driving car
+simulator (available in my repo:
+https://github.com/nikolaimatni/CppFun/tree/master/SelfDrivingCar).  For now we
+are working with the default MPC track (term 2, project 5), but we will
+ultimately customize.
+
+The basic work flow here is you need to implement a realization of the virtual
+base class Model: the pure virtual functions there are Cost, TerminalCost and
+DynamicsF.  This is pretty self-explanatory and further documented in the Model
+page.  Once this is specified, you initiate an MPC object with the suitable
+problem parameters and Model in main.cpp and the rest of the code takes care of
+the low-level details of interfacing with IpOPT and CppAD.
+
+See https://github.com/udacity/CarND-MPC-Project/ for the dependencies that you
+need to install to get this to run.
+
+ */
+
 // for convenience
 using json = nlohmann::json;
 
