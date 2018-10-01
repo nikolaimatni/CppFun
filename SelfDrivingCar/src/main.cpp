@@ -82,8 +82,6 @@ int main() {
   BikeModel bike_model(10, 6, 2, 1, 0.1, 70);
   Model &model = bike_model;
 
-  // NlpMPC nlmpc(10, model, 0.1, 10 * 6 + 9 * 2, 10 * 6, bounds);
-  // MPC &mpc = nlmpc;
   MPC mpc(10, model, 10 * 6 + 9 * 2, 10 * 6, bounds);
 
   h.onMessage([&mpc, &bike_model](uWS::WebSocket<uWS::SERVER> ws, char *data,

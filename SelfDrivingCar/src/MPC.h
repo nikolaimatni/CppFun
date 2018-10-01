@@ -11,19 +11,42 @@ using std::string;
 using std::vector;
 using Dvector = CPPAD_TESTVECTOR(double);
 
+/*!\brief Struct used to hold bounds for state constraints. Specifically, x_low_
+<= x(t) <= x_up_, and u_low_ <= u(t) <= u_low_ for all t, where constraints are
+enforced element wise.
+
+Struct used to hold bounds for state constraints. Specifically, x_low_ <= x(t)
+<= x_up_, and u_low_ <= u(t) <= u_low_ for all t, where constraints are enforced
+element wise.  Derive from this class to add additional constraint bounds, etc.,
+if you need to pass in more information to the MPC solver. */
+
 struct Bounds {
-  vector<double> x_up_, x_low_, u_up_, u_low_;
+  vector<double> x_up_;  ///> upper bound on state
+  vector<double> x_low_; ///>lower bound on state
+  vector<double> u_up_;  ///>upper bound on input
+  vector<double> u_low_; ///>lower bound on input
 };
 
+/*!\brief Base MPC class.  Whereas the model that you pass in takes care of
+ * specifying the dynamics and the cost function, the MPC object sets up the
+ * bounds on variables (as specified in Bounds object), and on constraints
+ * (enforces x(0) = x0, x(t+1) - f(x(t),u(t)) = 0), and also warmstarts your
+ * solver with a suitably shifted version of the last run's solution.  */
 class MPC {
 protected:
-  size_t N_; // horizon
-  Model &model_;
-  size_t nvars_, nconstraints_;
-  Bounds bounds_;
-  vector<int> starts_;
+  size_t N_;     ///> horizon is N_ -1
+  Model &model_; ///> Model object specifying dynamics, cost function, and
+                 /// additional constraints beyond box constraints in state and
+                 /// input
+  size_t nvars_; ///> number of optimizaiton variables
+  size_t nconstraints_; ///> number of constraints (excluding box constraints)
+  Bounds bounds_; ///> Bounds struct specifying input/state box constraints and
+                  /// whatever else a user chooses to add
+  vector<int> starts_; ///> bookkeeping: this is set using the starts_ vector of
+                       /// Model to ensure consistency
 
-  CppAD::vector<double> warmstart_;
+  CppAD::vector<double>
+      warmstart_; ///> remember last run's solution for warm starting
 
   virtual void SetupWarmStart(Dvector &vars, const VectorXd &state);
   virtual void SetupVarBounds(Dvector &vars_lowerbound,
@@ -42,37 +65,34 @@ public:
     starts_ = model_.starts();
   }
 
-  // default val for n_vars and n_constraints if we no additional constraints
-  // beyond dynamics are imposed
-
+  /// return optimization horizon
   size_t get_horizon() { return N_; }
+  /// set optimization horizon to N_ = n (actual horizon is n-1)
   void set_horizon(int n) { N_ = n; }
 
+  /// update model -- this also updates our start variable and clears warmstart_
   void set_model(Model &new_model) {
     model_ = new_model;
     starts_ = new_model.starts();
+    warmstart_.clear();
   }
 
   virtual ~MPC() {}
 
-  // Solve the model given an initial state and a reference trajectory.
-  // Return the first actuations.
+  /// Solve the model given an initial state and a reference trajectory.
+  /// Return the first actuations.
   virtual vector<double> Solve(const VectorXd &state, const VectorXd &ref);
 };
 
-class NlpMPC : public MPC {
-
-private:
-  double dt_;
-
-protected:
-  virtual void ProcessSolution(vector<double> &result, Dvector sol,
-                               int shift = 0) override;
+///\brief Place holder for what I'm working on now -- not clear if the
+///sequential linearization implementation will require a modification to base
+///MPC class, or will be fine with just a new model
+class SeqLinMPC : public MPC {
 
 public:
-  NlpMPC(size_t N, Model &model, double dt, size_t nvars, size_t nconstraints,
-         Bounds bounds)
-      : MPC(N, model, nvars, nconstraints, bounds), dt_(100) {}
+  SeqLinMPC(size_t N, Model &model, size_t nvars, size_t nconstraints,
+            Bounds bounds)
+      : MPC(N, model, nvars, nconstraints, bounds) {}
 
   // the reference trajectory is specified by polynomial coefficients contained
   // in coeffs (named ref in base class)

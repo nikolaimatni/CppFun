@@ -14,17 +14,32 @@ using std::vector;
 
 using ADVec = CPPAD_TESTVECTOR(AD<double>);
 
+/*!\brief Base Model Class.  Takes care of all of the low-level details needed
+ * to implement the cost function, dynamics.  Derive from this class and
+ * override the pure virtual functions Cost(t,x(t),u(t),u(t+1)),
+ * TerminalCost(x(N)), and DynamicsF(t,x(t),u(t));  */
 class Model {
 
 protected:
-  int N_, nx_, nu_, delay_;
-  vector<int> starts_;
+  int N_;     ///> optimization horizon is N_-1
+  int nx_;    ///> state dimension
+  int nu_;    ///> input dimension
+  int delay_; ///> input delay: x(t+1) = f(x(t),u(t-delay_))
+  vector<int>
+      starts_; ///> bookkeeping vector: starts_[i] says where in optimization
+               /// vector vars component i (either a scalar state or input)
 
+  /// Pure virtual function: should return per-stage cost
   virtual AD<double> Cost(int t, const ADVec &xt, const ADVec &ut,
                           const ADVec &utp1) = 0;
+
+  /// Pure virtual function: should return terminal cost
   virtual AD<double> TerminalCost(const ADVec &xN) = 0;
+
+  /// Pure virtual function: should return x(t+1) = f(x(t),u(t))
   virtual ADVec DynamicsF(int t, const ADVec &xt, const ADVec &ut) = 0;
 
+  /// Helper function to extract x(t) from vars
   ADVec x_t(int t, const ADVec &vars) {
     ADVec xt(nx_);
     for (int i = 0; i < nx_; ++i)
@@ -33,6 +48,7 @@ protected:
     return xt;
   }
 
+  /// Helper function to extract u(t) from vars
   ADVec u_t(int t, const ADVec &vars) {
     ADVec ut(nu_);
     for (int i = 0; i < nu_; ++i)
@@ -45,6 +61,8 @@ public:
   // need to have this typedef exactly as is for this to work with IpOPT;
   typedef CPPAD_TESTVECTOR(AD<double>) ADvector;
 
+  /// Establishes opitmization horizon (N), state-dim (nx), input-dim (nu),
+  /// input delay (delay), and populates bookkeeping vector starts_
   Model(int N, int nx, int nu, int delay)
       : N_(N), nx_(nx), nu_(nu), delay_(delay), starts_{0} {
     for (int i = 1; i <= nx_; ++i)
@@ -54,13 +72,30 @@ public:
       starts_.push_back(starts_[nx_ + i] + N - 1);
   }
 
+  /// returns reference to starts vector
   vector<int> &starts() { return starts_; }
+
+  /// returns state dim nx
   int nx() { return nx_; }
+
+  /// returns input dim nu
   int nu() { return nu_; }
+
+  /// returns horizon N
   int N() { return N_; }
+
+  /// Needed to plot MPC planned trajectory in simulator: should return
+  /// starts_[X], where X specifies the the position of X in the the state
+  /// vector.  e.g. if state[0] = x, then xstart shoudl return starts_[0];
   virtual int xstart() = 0;
+
+  /// Needed to plot MPC planned trajectory in simulator: should return
+  /// starts_[Y], where Y specifies the the position of X in the the state
+  /// vector.  e.g. if state[1] = y, then xstart shoudl return starts_[1];
   virtual int ystart() = 0;
 
+  /// Functor operator that is called by IpOPT.  This implements the low level
+  /// details
   void operator()(ADVec &fg, const ADVec &vars) {
 
     // start by setting the cost
@@ -78,6 +113,7 @@ public:
       fg[1 + starts_[i]] = vars[starts_[i]];
 
     // set the constraints used to enforce dynamics;
+    // delay_ specifies
     for (int t = 0; t < N_ - 1; ++t) {
       ADVec Fxtut = DynamicsF(t, x_t(t, vars), u_t(max(0, t - delay_), vars));
       ADVec xtp1 = x_t(t + 1, vars);
@@ -90,14 +126,30 @@ public:
   virtual ~Model() {}
 };
 
+/*! \brief Implementation of simple bike model used for direct NLP.  The cost
+ * function parameters were taken from someone's solution online just to debug
+ * things, will tune them more substantially later*/
 class BikeModel : public Model {
 private:
-  double dt_, vref_;
-  VectorXd coeffs_;
-  enum State { X, Y, PSI, V, CTE, EPSI };
-  enum Input { DELTA, A };
+  double dt_;       ///>sampling time dt
+  double vref_;     ///>reference velocity
+  VectorXd coeffs_; ///>coefficients
+  enum State {
+    X,
+    Y,
+    PSI,
+    V,
+    CTE,
+    EPSI
+  }; ///>positions of different state components in state, i.e. state(t) =
+     ///[x(t); y(t); psi(t); cte(t); epsi(t)].  Also specifies starts
+  enum Input {
+    DELTA,
+    A
+  }; ///>positions of different input components in input u(t), i.e. ut(t) =
+     ///[delta(t); a(t)].  Also specifies starts (offset by nx_)
 
-  const double Lf_ = 2.67;
+  const double Lf_ = 2.67; ///>model parameter roughly specifying turning radius
 
   virtual AD<double> Cost(int t, const ADVec &xt, const ADVec &ut,
                           const ADVec &utp1) override {
@@ -159,6 +211,8 @@ public:
             const VectorXd &coeffs = {})
       : Model(N, nx, nu, delay), dt_(dt), vref_(vref), coeffs_{coeffs} {}
 
+  /// call this before every mpc solve to update reference trajectory, which is
+  /// specified in terms of polynomial = \sum_{i=0}^2 coeffs[i] * pow(x,i)
   void set_coeffs(const VectorXd &coeffs) { coeffs_ = coeffs; }
 
   virtual int xstart() override { return starts_[X]; }
