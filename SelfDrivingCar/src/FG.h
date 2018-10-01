@@ -54,7 +54,7 @@ public:
       starts_.push_back(starts_[nx_ + i] + N - 1);
   }
 
-  const vector<int> &starts() const { return starts_; }
+  vector<int> &starts() { return starts_; }
   int nx() { return nx_; }
   int nu() { return nu_; }
   int N() { return N_; }
