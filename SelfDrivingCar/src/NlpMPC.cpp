@@ -1,6 +1,6 @@
 #include "Eigen-3.3/Eigen/Core"
-#include "FG.h"
 #include "MPC.h"
+#include "Model.h"
 #include <cmath>
 #include <cppad/cppad.hpp>
 #include <cppad/ipopt/solve.hpp>
@@ -88,6 +88,18 @@ void MPC::ProcessSolution(vector<double> &result, Dvector sol, int shift) {
   for (int i = model_.nx(); i < starts_.size(); i++) {
     result.push_back(sol[starts_[i] + shift]);
   }
+
+  // push back predicted trajectory to plot in simulator
+  int xstart = model_.xstart();
+  int ystart = model_.ystart();
+  for (int t = 1; t < N_; t++) {
+    size_t x_idx =
+        std::min(static_cast<size_t>(xstart + shift + t), xstart + N_ - 1);
+    size_t y_idx =
+        std::min(static_cast<size_t>(ystart + shift + t), ystart + N_ - 1);
+    result.push_back(sol[x_idx]);
+    result.push_back(sol[y_idx]);
+  }
 }
 
 void NlpMPC::ProcessSolution(vector<double> &result, Dvector sol, int shift) {
@@ -95,14 +107,14 @@ void NlpMPC::ProcessSolution(vector<double> &result, Dvector sol, int shift) {
   MPC::ProcessSolution(result, sol, shift);
 
   // push back predicted trajectory to plot in simulator
-  for (int t = 1; t < N_; t++) {
+  /*  for (int t = 1; t < N_; t++) {
     size_t x_idx = std::min(static_cast<size_t>(starts_[0] + shift + t),
                             starts_[0] + N_ - 1);
     size_t y_idx = std::min(static_cast<size_t>(starts_[1] + shift + t),
                             starts_[1] + N_ - 1);
     result.push_back(sol[x_idx]);
     result.push_back(sol[y_idx]);
-  }
+    }*/
 }
 
 void MPC::SetupOptions(std::string &options) {
@@ -153,9 +165,9 @@ vector<double> MPC::Solve(const VectorXd &state, const VectorXd &coeffs) {
   CppAD::ipopt::solve_result<Dvector> solution;
 
   // solve the problem
-  CppAD::ipopt::solve<Dvector, FG>(options, vars, vars_lowerbound,
-                                   vars_upperbound, constraints_lowerbound,
-                                   constraints_upperbound, model_, solution);
+  CppAD::ipopt::solve<Dvector, Model>(options, vars, vars_lowerbound,
+                                      vars_upperbound, constraints_lowerbound,
+                                      constraints_upperbound, model_, solution);
 
   // Check some of the solution values
   bool ok = true;

@@ -2,14 +2,13 @@
 #define MPC_H
 
 #include "Eigen-3.3/Eigen/Core"
-#include "FG.h"
+#include "Model.h"
 #include <string>
 #include <vector>
 
 using Eigen::VectorXd;
 using std::string;
 using std::vector;
-using Model = FG;
 using Dvector = CPPAD_TESTVECTOR(double);
 
 struct Bounds {
@@ -49,7 +48,7 @@ public:
   size_t get_horizon() { return N_; }
   void set_horizon(int n) { N_ = n; }
 
-  void set_model(FG &new_model) {
+  void set_model(Model &new_model) {
     model_ = new_model;
     starts_ = new_model.starts();
   }
@@ -71,9 +70,9 @@ protected:
                                int shift = 0) override;
 
 public:
-  NlpMPC(size_t N, FG &model, double dt, size_t nvars, size_t nconstraints,
+  NlpMPC(size_t N, Model &model, double dt, size_t nvars, size_t nconstraints,
          Bounds bounds)
-      : MPC(N, model, nvars, nconstraints, bounds), dt_(dt) {}
+      : MPC(N, model, nvars, nconstraints, bounds), dt_(100) {}
 
   // the reference trajectory is specified by polynomial coefficients contained
   // in coeffs (named ref in base class)

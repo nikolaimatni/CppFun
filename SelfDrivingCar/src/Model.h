@@ -1,5 +1,5 @@
-#ifndef FG_H
-#define FG_H
+#ifndef MODEL_H
+#define MODEL_H
 
 #include "Eigen-3.3/Eigen/Core"
 #include <cmath>
@@ -14,7 +14,7 @@ using std::vector;
 
 using ADVec = CPPAD_TESTVECTOR(AD<double>);
 
-class FG {
+class Model {
 
 protected:
   int N_, nx_, nu_, delay_;
@@ -45,7 +45,7 @@ public:
   // need to have this typedef exactly as is for this to work with IpOPT;
   typedef CPPAD_TESTVECTOR(AD<double>) ADvector;
 
-  FG(int N, int nx, int nu, int delay)
+  Model(int N, int nx, int nu, int delay)
       : N_(N), nx_(nx), nu_(nu), delay_(delay), starts_{0} {
     for (int i = 1; i <= nx_; ++i)
       starts_.push_back(starts_[i - 1] + N);
@@ -87,10 +87,10 @@ public:
         fg[2 + starts_[i] + t] = xtp1[i] - Fxtut[i];
     }
   }
-  virtual ~FG() {}
+  virtual ~Model() {}
 };
 
-class FGBikeModel : public FG {
+class BikeModel : public Model {
 private:
   double dt_, vref_;
   VectorXd coeffs_;
@@ -155,16 +155,16 @@ private:
   }
 
 public:
-  FGBikeModel(int N, int nx, int nu, int delay, double dt, double vref,
-              const VectorXd &coeffs = {})
-      : FG(N, nx, nu, delay), dt_(dt), vref_(vref), coeffs_{coeffs} {}
+  BikeModel(int N, int nx, int nu, int delay, double dt, double vref,
+            const VectorXd &coeffs = {})
+      : Model(N, nx, nu, delay), dt_(dt), vref_(vref), coeffs_{coeffs} {}
 
   void set_coeffs(const VectorXd &coeffs) { coeffs_ = coeffs; }
 
   virtual int xstart() override { return starts_[X]; }
   virtual int ystart() override { return starts_[Y]; }
 
-  virtual ~FGBikeModel() {}
+  virtual ~BikeModel() {}
 };
 
 #endif

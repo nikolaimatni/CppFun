@@ -1,7 +1,7 @@
 #include "Eigen-3.3/Eigen/Core"
 #include "Eigen-3.3/Eigen/QR"
-#include "FG.h"
 #include "MPC.h"
+#include "Model.h"
 #include "json.hpp"
 #include <chrono>
 #include <iostream>
@@ -79,11 +79,12 @@ int main() {
   bounds.u_low_ = vector<double>{-1 * deg2rad(25), -1};
 
   // MPC is initialized here!
-  FGBikeModel bike_model(10, 6, 2, 1, 0.1, 70);
-  FG &model = bike_model;
+  BikeModel bike_model(10, 6, 2, 1, 0.1, 70);
+  Model &model = bike_model;
 
-  NlpMPC nlmpc(10, model, 0.1, 10 * 6 + 9 * 2, 10 * 6, bounds);
-  MPC &mpc = nlmpc;
+  // NlpMPC nlmpc(10, model, 0.1, 10 * 6 + 9 * 2, 10 * 6, bounds);
+  // MPC &mpc = nlmpc;
+  MPC mpc(10, model, 10 * 6 + 9 * 2, 10 * 6, bounds);
 
   h.onMessage([&mpc, &bike_model](uWS::WebSocket<uWS::SERVER> ws, char *data,
                                   size_t length, uWS::OpCode opCode) {
