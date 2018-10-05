@@ -1,6 +1,56 @@
 #include <iostream>
+#include <memory> // for std::unique_ptr
 
 using namespace std;
+
+// homebrew implementation of vector<T> using unique_ptr
+template <typename T> class SmartArrayList {
+private:
+  unique_ptr<T> data_;
+  int size_;
+  int capacity_;
+
+  void Expand() {
+
+    // double capacity and copy over
+    unique_ptr<T> new_data(new T[2 * capacity_ + 1]);
+
+    capacity_ = 2 * capacity_ + 1;
+
+    // copy over existing data
+    for (int i = 0; i < size_; ++i)
+      new_data.get()[i] = data_.get()[i];
+
+    // reassign data_ to point to new_data
+    data_ = move(new_data);
+  }
+
+public:
+  SmartArrayList() : data_(unique_ptr<T>(nullptr)), size_(0), capacity_(0) {}
+  SmartArrayList(size_t size)
+      : data_(new T[size]), size_(size), capacity_(size) {}
+  size_t size() { return size_; }
+  void push_back(T item) {
+    if (size_ == capacity_)
+      Expand();
+
+    data_.get()[size_] = item;
+    size_++;
+  }
+
+  void print() {
+    for (int i = 0; i < size_; ++i)
+      cout << data_.get()[i] << " ";
+    cout << "\n";
+  }
+
+  T *data() { return data_.get(); }
+
+  T &operator[](const int i) { return data_.get()[i]; }
+
+  ~SmartArrayList() {}
+};
+
 // homebrew implementation of vector<T>
 template <typename T> class ArrayList {
 private:
@@ -72,9 +122,81 @@ public:
   }
   Matrix(T **init, size_t N) : matrix_(init), N_(N) {}
 
+  // copy semantics
+  Matrix(const Matrix &m) {
+    cout << "copy constructor!\n";
+    // perform a deep copy
+    N_ = m.N_;
+    matrix_ = new T *[N_];
+    for (int i = 0; i < N_; i++)
+      matrix_[i] = new T[N_];
+
+    for (int i = 0; i < N_; i++)
+      for (int j = 0; j < N_; j++)
+        matrix_[i][j] = m.matrix_[i][j];
+  }
+
+  Matrix &operator=(const Matrix &m) {
+    cout << "copy assignment!\n";
+    // check for self assignment;
+    if (&m == this)
+      return *this;
+
+    N_ = m.N_;
+    // now perform a deep copy
+    if (!matrix_) {
+      // if memory hasn't been allocated for the matrix yet, allocate it
+      matrix_ = new T *[N_];
+      for (int i = 0; i < N_; i++)
+        matrix_[i] = new T[N_];
+    }
+
+    // now copy data
+    for (int i = 0; i < N_; i++)
+      for (int j = 0; j < N_; j++)
+        matrix_[i][j] = m.matrix_[i][j];
+
+    return *this;
+  }
+
+  // move semantics
+  Matrix(Matrix &&m) {
+    cout << "move constructor!\n";
+    // initialize local variable;
+    N_ = m.N_;
+
+    // claim ownership of source's matrix_
+    matrix_ = m.matrix_;
+
+    // set source Matrix to ``default'' state
+    m.matrix_ = nullptr;
+    m.N_ = 0;
+  }
+
+  Matrix &operator=(Matrix &&m) {
+    // check for self-assignment
+    cout << "move assignment!\n";
+    if (&m == this)
+      return *this;
+
+    // initilize size
+    N_ = m.N_;
+
+    // claim ownership of source's matrix_
+    matrix_ = m.matrix_;
+
+    // set source matrix to default state
+    m.matrix_ = nullptr;
+    m.N_ = 0;
+  }
+
+  size_t size() { return N_; }
+
   T *row(int i) { return matrix_[i]; }
 
   T val(int i, int j) const { return matrix_[i][j]; }
+
+  T **data() { return matrix_; }
 
   // when we call this on a non-const object, pass back reference to allow for
   // modifications
@@ -151,7 +273,7 @@ template <typename T> Matrix<T> Rotate(const Matrix<T> &input, const size_t N) {
 }
 
 int main() {
-  ArrayList<int> my_array;
+  SmartArrayList<int> my_array;
   for (int i = 0; i < 10; i++) {
     my_array.push_back(i);
   }
@@ -194,12 +316,30 @@ int main() {
   original.print();
 
   print_line();
-  Matrix<int> rotated = Rotate(original, N);
+  Matrix<int> rotated = Rotate((original), N);
 
   rotated.print();
   print_line();
   original.Rotate();
   original.print();
+
+  Matrix<int> copy(move(rotated));
+  Matrix<int> empty_vessel(N);
+  empty_vessel = move(copy);
+  print_line();
+  empty_vessel.print();
+
+  if (rotated.size()) {
+    print_line();
+    cout << "printing rotated\n";
+    rotated.print();
+  }
+
+  if (copy.size()) {
+    print_line();
+    cout << "printing copy \n";
+    copy.print();
+  }
 
   return 0;
 }
