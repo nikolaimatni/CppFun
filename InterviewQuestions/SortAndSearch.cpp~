@@ -1,0 +1,21 @@
+#include <iostream>
+#include <vector>
+
+void SortedMerge(vector<int> &A, vector<int> &B) {
+  // start with brute force approach
+  int idx = 0; // this is the last spot that we inserted an element of B in.
+               // Since they are both sorted, we only need to look forward in A
+
+  for (auto b : B) {
+    for (int i = idx; i < A.size(); i++) {
+      if (A[i] <= b) {
+        insert(b, A, i);
+      }
+    }
+  }
+}
+
+int main() {
+  //
+  return 0;
+}
