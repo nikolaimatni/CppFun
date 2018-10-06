@@ -196,7 +196,7 @@ int main() {
   vector<int> D{21, 23, 25, 1, 3, 4, 5, 7, 10, 14, 15, 16, 17, 18, 19, 20};
   cout << "5 is in position " << RotatedSearch(D, 5) << "\n";
 
-  vector<int> E(1000, -1);
+  vector<int> E(2000, -1);
   for (int i = 0; i < 10; i++)
     E[i] = 2 * i;
 
