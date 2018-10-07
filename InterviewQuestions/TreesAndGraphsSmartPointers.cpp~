@@ -1,0 +1,9 @@
+#include <memory>
+#include <vector>
+
+using namespace std;
+
+struct Node {
+  unique_ptr<Node> left_;
+  unique_ptr<Node> right_;
+}

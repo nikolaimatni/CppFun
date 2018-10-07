@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <iostream>
 #include <memory>
 #include <vector>
@@ -176,25 +177,51 @@ int ListySearch(const vector<int> &A, int val) {
   return BinaryFind(A, 0, mid - 1, val);
 }
 
+void SortedMerge1(vector<int> &A, vector<int> &B) {
+  // start at the beginning of B, and compare to  A.
+  // because B is sorted, you never have to look past where you just inserted
+  // something, so keep track of that using iterator it;
+  auto it = A.begin();
+  for (auto b = B.begin(); b != B.end(); b++) {
+    it = lower_bound(it, A.end(), *b);
+    if (it != A.end()) {
+      it = A.insert(it, *b);
+    } else {
+      A.insert(it, b, B.end());
+      return;
+    }
+  }
+}
 int main() {
-  vector<int> A{1, 5, 8, 23};
+  vector<int> A{1, 5, 8};
   vector<int> B{3, 4, 7, 10, 11};
 
-  SortedMerge(A, B);
+  //  SortedMerge(A, B);
+  SortedMerge1(A, B);
   print(A);
 
   vector<int> C{3, 7, 8, 23, 25};
   cout << *BinarySearch(C.begin(), C.end(), 10) << "\n";
   cout << *BinarySearch(C, 10) << "\n";
   cout << *(C.begin() + 1 + distance(C.begin() + 1, C.end()) / 2) << "\n";
-  cout << *BinaryFind(C, 7) << "\n";
+  cout << (BinaryFind(C, 7) != C.end() ? "found" : "not found") << "\n";
+  cout << (find(C.begin(), C.end(), 27) != C.end() ? "found" : "not found")
+       << "\n";
   // auto insert_point = BinarySearch(A.begin(), A.end(), 6);
   // cout << *insert_point << "\n";
   // A.insert(insert_point + 1, 6);
   // print(A);
 
+  return 0;
+
   vector<int> D{21, 23, 25, 1, 3, 4, 5, 7, 10, 14, 15, 16, 17, 18, 19, 20};
   cout << "5 is in position " << RotatedSearch(D, 5) << "\n";
+
+  cout << "modding using a lambda: ";
+  for_each(D.begin(), (D.end() - distance(D.begin(), D.end()) / 2),
+           [](int &val) { val = 1; });
+  cout << "\n";
+  print(D);
 
   vector<int> E(2000, -1);
   for (int i = 0; i < 10; i++)
